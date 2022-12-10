@@ -55,6 +55,9 @@ list :  statement ';'
 statement: ID ASSIGN ID
          | ID ASSIGN NR  		 
          | ID '(' lista_apel ')'
+         | ID'.'ID ASSIGN ID
+         | ID'.'ID ASSIGN NR  		 
+         | ID'.'ID '(' lista_apel ')'
          ;
         
 lista_apel : NR

@@ -10,5 +10,6 @@ int q;
 begin
 
 x = 3;
+a.abc = 3;
 
 end
