@@ -1,11 +1,9 @@
 int[] x, y, z;
   
-#custom_obj
-int abc;
-endclass;
-
-int q;
-function sum();
+$sumaaaa ()
+int x;
+x = 3;
+endfunction;
 
 #custom_obj a;
 

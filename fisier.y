@@ -4,7 +4,7 @@ extern FILE* yyin;
 extern char* yytext;
 extern int yylineno;
 %}
-%token ID TIP BGIN END ASSIGN NR CLASS_DEFINE END_CLASS FUNCTION
+%token ID TIP BGIN END ASSIGN NR CLASS_DEFINE END_CLASS FUNCTION_DEFINE END_FUNCTION
 %start progr
 %%
 progr: declaratii bloc {printf("program corect sintactic\n");}
@@ -15,10 +15,21 @@ declaratii :  declaratie ';'
         | clasa ';'
         | declaratii clasa ';'
         | clasa declaratii ';'
+        | functie ';'
+        | declaratii functie ';'
+        | functie declaratii ';'
 	   ;
-mini_declaratii :  declaratie ';'
-	   | mini_declaratii declaratie ';'
-	   ;        
+declaratii_clasa_intern :  declaratie ';'
+                        | declaratii_clasa_intern declaratie ';'
+                        | functie ';'
+                        | declaratii functie ';'
+                        | functie declaratii ';'
+                        ;        
+declaratii_functie_intern :  declaratie ';'
+	                     | declaratii_functie_intern declaratie ';'
+                          | list ';'
+                          | declaratii_functie_intern list;
+                          ;
 declaratie : TIP ID 
            | TIP ID '(' lista_param ')'
            | TIP ID '(' ')'
@@ -27,8 +38,6 @@ declaratie : TIP ID
            | CLASS_DEFINE ID '(' lista_param ')'
            | CLASS_DEFINE ID '(' ')'
            | CLASS_DEFINE multiple_ids
-           | FUNCTION ID '(' lista_param ')'
-           | FUNCTION ID '(' ')'
            ;
 multiple_ids : ID 
              | ID ',' multiple_ids 
@@ -41,7 +50,9 @@ param : TIP ID
       ; 
 
 
-clasa : CLASS_DEFINE mini_declaratii END_CLASS
+functie: FUNCTION_DEFINE '(' ')' declaratii_functie_intern END_FUNCTION
+
+clasa : CLASS_DEFINE declaratii_clasa_intern END_CLASS
       ;
 
 /* bloc */

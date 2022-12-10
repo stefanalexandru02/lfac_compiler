@@ -8,9 +8,10 @@
 "begin" {return BGIN;}
 "end" {return END;}
 "endclass" {return END_CLASS;}
+"endfunction" {return END_FUNCTION;}
+$[_a-zA-Z][_a-zA-Z0-9]* {return FUNCTION_DEFINE;}
 [_a-zA-Z][_a-zA-Z0-9]* {return ID;}
 #[_a-zA-Z][_a-zA-Z0-9]* {return CLASS_DEFINE;}
-"function" {return FUNCTION;}
 "=" {return ASSIGN;}
 [0-9]+ {return NR;}
 [ \t] ;
