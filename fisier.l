@@ -4,7 +4,7 @@
 %}
 %option noyywrap
 %%
-"int"|"float"|"char"|"string" {return TIP;}
+"int"|"float"|"char"|"string"|"bool"|"int[]"|"float[]"|"char[]"|"string[]"|"bool[]" {return TIP;}
 "begin_progr" {return BGIN;}
 "end_progr" {return END;}
 @[_a-zA-Z][_a-zA-Z0-9]* {return ID;}
