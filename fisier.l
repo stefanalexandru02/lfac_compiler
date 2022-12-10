@@ -10,6 +10,7 @@
 "endclass" {return END_CLASS;}
 "if" { return IF_STATEMENT; }
 "while" { return WHILE_STATEMENT; }
+"for" { return FOR_STATEMENT; }
 "endfunction" {return END_FUNCTION;}
 $[_a-zA-Z][_a-zA-Z0-9]* {return FUNCTION_DEFINE;}
 [_a-zA-Z][_a-zA-Z0-9]* {return ID;}

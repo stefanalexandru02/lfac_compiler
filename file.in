@@ -21,4 +21,8 @@ while x < t:
 x = 1;
 end;
 
+for x = 1; x < 10; x = 2:
+x = 3;
+end;
+
 end

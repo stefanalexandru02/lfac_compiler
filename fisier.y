@@ -4,7 +4,7 @@ extern FILE* yyin;
 extern char* yytext;
 extern int yylineno;
 %}
-%token ID TIP BGIN END ASSIGN NR CLASS_DEFINE END_CLASS FUNCTION_DEFINE END_FUNCTION OPERATORS IF_STATEMENT WHILE_STATEMENT
+%token ID TIP BGIN END ASSIGN NR CLASS_DEFINE END_CLASS FUNCTION_DEFINE END_FUNCTION OPERATORS IF_STATEMENT WHILE_STATEMENT FOR_STATEMENT
 %start progr
 %%
 progr: declaratii bloc {printf("program corect sintactic\n");}
@@ -68,8 +68,7 @@ list :  statement ';'
      ;
 
 /* instructiune */
-statement: ID ASSIGN ID
-         | ID ASSIGN NR  		 
+statement: assign_statement		 
          | ID '(' lista_apel ')'
          | ID'.'ID ASSIGN ID
          | ID'.'ID ASSIGN NR  		 
@@ -77,11 +76,19 @@ statement: ID ASSIGN ID
          | ID'.'ID '(' ')'
          | if_statement
          | while_statement
+         | for_statement
          ;
         
+assign_statement : ID ASSIGN ID
+                 | ID ASSIGN NR  
+
 if_statement : IF_STATEMENT boolean_expression ':' list END
              ;
 while_statement : WHILE_STATEMENT boolean_expression ':' list END
+                ;
+for_statement : FOR_STATEMENT assign_statement ';' boolean_expression ';' assign_statement ':' list END
+              ;
+
 boolean_expression : ID OPERATORS ID
                    | NR OPERATORS ID
                    | ID OPERATORS NR
