@@ -5,6 +5,8 @@ int abc;
 endclass;
 
 int q;
+function sum();
+
 #custom_obj a;
 
 begin

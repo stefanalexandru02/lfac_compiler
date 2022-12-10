@@ -10,6 +10,7 @@
 "endclass" {return END_CLASS;}
 [_a-zA-Z][_a-zA-Z0-9]* {return ID;}
 #[_a-zA-Z][_a-zA-Z0-9]* {return CLASS_DEFINE;}
+"function" {return FUNCTION;}
 "=" {return ASSIGN;}
 [0-9]+ {return NR;}
 [ \t] ;

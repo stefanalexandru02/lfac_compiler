@@ -4,7 +4,7 @@ extern FILE* yyin;
 extern char* yytext;
 extern int yylineno;
 %}
-%token ID TIP BGIN END ASSIGN NR CLASS_DEFINE END_CLASS
+%token ID TIP BGIN END ASSIGN NR CLASS_DEFINE END_CLASS FUNCTION
 %start progr
 %%
 progr: declaratii bloc {printf("program corect sintactic\n");}
@@ -27,6 +27,8 @@ declaratie : TIP ID
            | CLASS_DEFINE ID '(' lista_param ')'
            | CLASS_DEFINE ID '(' ')'
            | CLASS_DEFINE multiple_ids
+           | FUNCTION ID '(' lista_param ')'
+           | FUNCTION ID '(' ')'
            ;
 multiple_ids : ID 
              | ID ',' multiple_ids 
