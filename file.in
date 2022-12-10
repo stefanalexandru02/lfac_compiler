@@ -1,0 +1,8 @@
+int @x, @y, @z;
+
+begin_progr
+
+@a := 3;
+@x := @x+(23*5+@z*3);
+
+end_progr
