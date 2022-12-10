@@ -71,6 +71,7 @@ statement: ID ASSIGN ID
          | ID'.'ID ASSIGN ID
          | ID'.'ID ASSIGN NR  		 
          | ID'.'ID '(' lista_apel ')'
+         | ID'.'ID '(' ')'
          ;
         
 lista_apel : NR
