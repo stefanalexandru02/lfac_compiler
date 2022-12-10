@@ -8,11 +8,14 @@
 "begin" {return BGIN;}
 "end" {return END;}
 "endclass" {return END_CLASS;}
+"if" { return IF_STATEMENT; }
+"while" { return WHILE_STATEMENT; }
 "endfunction" {return END_FUNCTION;}
 $[_a-zA-Z][_a-zA-Z0-9]* {return FUNCTION_DEFINE;}
 [_a-zA-Z][_a-zA-Z0-9]* {return ID;}
 #[_a-zA-Z][_a-zA-Z0-9]* {return CLASS_DEFINE;}
 "=" {return ASSIGN;}
+"<"|"<="|"=="|">"|">="|"!=" { return OPERATORS; }
 [0-9]+ {return NR;}
 [ \t] ;
 \n {yylineno++;}
