@@ -4,6 +4,9 @@ int[] x, y, z;
 int abc;
 endclass;
 
+int q;
+#custom_obj a;
+
 begin
 
 x = 3;

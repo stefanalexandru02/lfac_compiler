@@ -23,6 +23,10 @@ declaratie : TIP ID
            | TIP ID '(' lista_param ')'
            | TIP ID '(' ')'
            | TIP multiple_ids
+           | CLASS_DEFINE ID 
+           | CLASS_DEFINE ID '(' lista_param ')'
+           | CLASS_DEFINE ID '(' ')'
+           | CLASS_DEFINE multiple_ids
            ;
 multiple_ids : ID 
              | ID ',' multiple_ids 
