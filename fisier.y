@@ -4,15 +4,20 @@ extern FILE* yyin;
 extern char* yytext;
 extern int yylineno;
 %}
-%token ID TIP BGIN END ASSIGN NR CLASS_DEFINE END_CLASS START_FUNCTION END_FUNCTION OPERATORS IF_STATEMENT WHILE_STATEMENT FOR_STATEMENT
+%token ID TIP BGIN END ASSIGN NR CLASS_DEFINE END_CLASS START_FUNCTION END_FUNCTION OPERATORS IF_STATEMENT WHILE_STATEMENT FOR_STATEMENT START_CLASS START_PROGRAM END_PROGRAM
 %start progr
 %%
 progr: program_structure {printf("program corect sintactic\n");}
      ;
 
-program_structure : declaratii_globale declaratii_functii 
-                    | declaratii_globale 
-                    | declaratii_functii
+program_structure : declaratii_globale declaratii_functii declaratii_clase program
+                    | declaratii_globale declaratii_clase program
+                    | declaratii_globale declaratii_functii program
+                    | declaratii_functii declaratii_clase program
+                    | declaratii_clase program
+                    | declaratii_globale program
+                    | declaratii_functii program
+                    | program
                     ;
 
 /* -------------------------------- */
@@ -56,11 +61,21 @@ param : TIP ID
 
 /* custom data types declaration */
 
+declaratii_clase : declaratie_clasa 
+                    | declaratii_clase declaratie_clasa;
+
+declaratie_clasa : START_CLASS ID ':' declaratii_globale declaratii_functii END_CLASS
+               | START_CLASS ID ':' declaratii_globale END_CLASS
+               | START_CLASS ID ':' declaratii_functii END_CLASS
+               ;
+
 /* end custom data types declaration */
 
 /* -------------------------------- */
 
 /* main */
+
+program: START_PROGRAM END_PROGRAM
 
 /* end main */
 

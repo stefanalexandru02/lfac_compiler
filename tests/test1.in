@@ -11,3 +11,15 @@ endfunction
 function int sum(char a, char b):
 
 endfunction
+
+class student:
+
+int a;
+function int multiply(int b):
+
+endfunction
+
+endclass
+
+start_program
+end_program
