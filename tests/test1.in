@@ -23,6 +23,4 @@ end_class
 
 start_program
 
-(x + 3) - a + (a + (2 * 4))
-
 end_program

@@ -22,8 +22,11 @@
 [0-9]+ {return NR;}
 
 "if" { return IF_STATEMENT; }
+"end_if" {return END_IF; }
 "while" { return WHILE_STATEMENT; }
+"end_while" {return END_WHILE; }
 "for" { return FOR_STATEMENT; }
+"end_for" {return END_FOR; }
 
 "=" {return ASSIGN;}
 "<"|"<="|"=="|">"|">="|"!=" { return COMPARATORS; }
