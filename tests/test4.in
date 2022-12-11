@@ -1,0 +1,21 @@
+
+function int sum():
+
+end_function
+
+function int sum(char a, char b):
+
+end_function
+
+class student:
+
+int a;
+
+function int multiply(int b):
+
+end_function
+
+end_class
+
+start_program
+end_program

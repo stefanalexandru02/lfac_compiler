@@ -1,0 +1,16 @@
+int[] x;
+int a;
+float dfr;
+bool[] x;
+
+function int sum():
+
+end_function
+
+function int sum(char a, char b):
+
+end_function
+
+
+start_program
+end_program

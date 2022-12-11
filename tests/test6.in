@@ -1,0 +1,9 @@
+int[] x, y, z;
+int a;
+char c;
+char[] test;
+bool asb;
+
+
+start_program
+end_program

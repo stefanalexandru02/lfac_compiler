@@ -1,0 +1,9 @@
+
+class student:
+
+int a;
+
+end_class
+
+start_program
+end_program
