@@ -4,20 +4,13 @@ extern FILE* yyin;
 extern char* yytext;
 extern int yylineno;
 %}
-%token ID TIP BGIN END ASSIGN NR END_CLASS START_FUNCTION END_FUNCTION COMPARATORS IF_STATEMENT WHILE_STATEMENT FOR_STATEMENT START_CLASS START_PROGRAM END_PROGRAM END_IF END_FOR END_WHILE
+%token ID TIP BGIN END ASSIGN NR END_CLASS START_FUNCTION END_FUNCTION COMPARATORS START_IF START_WHILE START_FOR START_CLASS START_PROGRAM END_PROGRAM END_IF END_FOR END_WHILE
 %start progr
 %%
 progr: program_structure {printf("program corect sintactic\n");}
      ;
 
 program_structure : declaratii_globale declaratii_functii declaratii_clase program
-                    | declaratii_globale declaratii_clase program
-                    | declaratii_globale declaratii_functii program
-                    | declaratii_functii declaratii_clase program
-                    | declaratii_clase program
-                    | declaratii_globale program
-                    | declaratii_functii program
-                    | program
                     ;
 
 /* -------------------------------- */
@@ -26,6 +19,7 @@ program_structure : declaratii_globale declaratii_functii declaratii_clase progr
 
 declaratii_globale : declaratie_globala ';'
                     | declaratii_globale declaratie_globala ';'
+                    |
                     ;
 declaratie_globala : TIP ID
                     | TIP multiple_ids
@@ -42,6 +36,7 @@ multiple_ids : ID
 
 declaratii_functii : declaratie_functie
                     | declaratii_functii declaratie_functie
+                    |
                     ;
 
 declaratie_functie : START_FUNCTION TIP ID '(' ')' ':' END_FUNCTION
@@ -62,7 +57,9 @@ param : TIP ID
 /* custom data types declaration */
 
 declaratii_clase : declaratie_clasa 
-                    | declaratii_clase declaratie_clasa;
+                    | declaratii_clase declaratie_clasa
+                    |
+                    ;
 
 declaratie_clasa : START_CLASS ID ':' declaratii_globale declaratii_functii END_CLASS
                | START_CLASS ID ':' declaratii_globale END_CLASS
@@ -75,8 +72,46 @@ declaratie_clasa : START_CLASS ID ':' declaratii_globale declaratii_functii END_
 
 /* main */
 
-program: START_PROGRAM END_PROGRAM 
+program: START_PROGRAM execution_block END_PROGRAM
           ;
+
+execution_block : declaratii_globale execution_block_logic
+               ;
+
+execution_block_logic : function_calls assign_statements control_statements
+                    | assign_statements control_statements
+                    | control_statements
+                    |
+                    ;
+
+function_calls: function_call 
+               | function_calls function_call
+               |
+               ;
+function_call : ID '(' ')' ';' 
+               | ID '(' lista_apel ')' ';'
+               ;
+
+lista_apel : expression_element
+           | lista_apel ',' expression_element
+           ;
+
+assign_statements : assign_statement
+                    | assign_statements assign_statement 
+                    |
+                    ;
+assign_statement : ID ASSIGN expression ';'
+                 ;
+
+control_statements :  control_statement 
+                    | control_statements control_statement
+                    |
+                    ;
+
+control_statement : if_statement
+                    | while_statement
+                    | for_statement
+                    ;
 
 /* end main */
 
@@ -84,11 +119,14 @@ program: START_PROGRAM END_PROGRAM
 
 /* control statements */
 
-if_statement : IF_STATEMENT boolean_expression ':' END_IF
+if_statement : START_IF boolean_expression ')' '{' execution_block END_IF
              ;
 
-while_statement : WHILE_STATEMENT boolean_expression ':' END_WHILE
+while_statement : START_WHILE boolean_expression ')' '{' execution_block END_WHILE
                 ;
+
+for_statement : START_FOR assign_statement boolean_expression ';' assign_statement ')' '{' execution_block END_FOR
+               ;
 
 /* end control statements */
 
@@ -158,26 +196,15 @@ list :  statement ';'
      ;
 
 /* instructiune */
-statement: assign_statement		 
-         | ID '(' lista_apel ')'
+statement: 		 
+         ID '(' lista_apel ')'
          | ID'.'ID ASSIGN ID
          | ID'.'ID ASSIGN NR  		 
          | ID'.'ID '(' lista_apel ')'
          | ID'.'ID '(' ')'
          | if_statement
          | while_statement
-         | for_statement
-         ;
-        
-assign_statement : ID ASSIGN ID
-                 | ID ASSIGN NR  
-
-for_statement : FOR_STATEMENT assign_statement ';' boolean_expression ';' assign_statement ':' list END
-              ;
-
-lista_apel : NR
-           | lista_apel ',' NR
-           ;
+         ; 
 %%
 int yyerror(char * s){
 printf("eroare: %s la linia:%d\n",s,yylineno);

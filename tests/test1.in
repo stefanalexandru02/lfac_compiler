@@ -23,4 +23,19 @@ end_class
 
 start_program
 
+while(x + 3 < 5){
+
+int b;
+b = x + 3;
+
+if(x == 3){
+    b = 12;
+}end_if
+
+}end_while
+
+for(x = 3; x < 5; x = x + 1;){
+    b = 12;
+}end_for
+
 end_program
