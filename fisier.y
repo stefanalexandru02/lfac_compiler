@@ -4,7 +4,7 @@ extern FILE* yyin;
 extern char* yytext;
 extern int yylineno;
 %}
-%token ID TIP BGIN END ASSIGN NR CLASS_DEFINE END_CLASS START_FUNCTION END_FUNCTION OPERATORS IF_STATEMENT WHILE_STATEMENT FOR_STATEMENT START_CLASS START_PROGRAM END_PROGRAM
+%token ID TIP BGIN END ASSIGN NR END_CLASS START_FUNCTION END_FUNCTION OPERATORS IF_STATEMENT WHILE_STATEMENT FOR_STATEMENT START_CLASS START_PROGRAM END_PROGRAM
 %start progr
 %%
 progr: program_structure {printf("program corect sintactic\n");}
@@ -82,21 +82,11 @@ program: START_PROGRAM END_PROGRAM
 /* -------------------------------- */
 
 
-
 declaratii :  declaratie ';'
 	   | declaratii declaratie ';'
-        | clasa ';'
-        | declaratii clasa ';'
-        | clasa declaratii ';'
-        | functie ';'
-        | declaratii functie ';'
-        | functie declaratii ';'
 	   ;
 declaratii_clasa_intern :  declaratie ';'
                         | declaratii_clasa_intern declaratie ';'
-                        | functie ';'
-                        | declaratii functie ';'
-                        | functie declaratii ';'
                         ;        
 declaratii_functie_intern :  declaratie ';'
 	                     | declaratii_functie_intern declaratie ';'
@@ -107,19 +97,7 @@ declaratie : TIP ID
            | TIP ID '(' lista_param ')'
            | TIP ID '(' ')'
            | TIP multiple_ids
-           | CLASS_DEFINE ID 
-           | CLASS_DEFINE ID '(' lista_param ')'
-           | CLASS_DEFINE ID '(' ')'
-           | CLASS_DEFINE multiple_ids
            ;
-
-
-functie : START_FUNCTION '(' ')' declaratii_functie_intern END_FUNCTION
-        | START_FUNCTION '(' lista_param ')' declaratii_functie_intern END_FUNCTION
-        ;
-
-clasa : CLASS_DEFINE declaratii_clasa_intern END_CLASS
-      ;
 
 /* bloc */
 bloc : BGIN list END  

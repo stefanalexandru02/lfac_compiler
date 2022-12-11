@@ -17,7 +17,6 @@
 "function" {return START_FUNCTION;}
 "class" {return START_CLASS; }
 [_a-zA-Z][_a-zA-Z0-9]* {return ID;}
-#[_a-zA-Z][_a-zA-Z0-9]* {return CLASS_DEFINE;}
 "=" {return ASSIGN;}
 "<"|"<="|"=="|">"|">="|"!=" { return OPERATORS; }
 [0-9]+ {return NR;}
