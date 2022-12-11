@@ -6,20 +6,20 @@ bool asb;
 
 function int sum():
 
-endfunction
+end_function
 
 function int sum(char a, char b):
 
-endfunction
+end_function
 
 class student:
 
 int a;
 function int multiply(int b):
 
-endfunction
+end_function
 
-endclass
+end_class
 
 start_program
 end_program

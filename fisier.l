@@ -9,11 +9,11 @@
 "end" {return END;}
 "start_program" { return START_PROGRAM;}
 "end_program" { return END_PROGRAM;}
-"endclass" {return END_CLASS;}
+"end_class" {return END_CLASS;}
 "if" { return IF_STATEMENT; }
 "while" { return WHILE_STATEMENT; }
 "for" { return FOR_STATEMENT; }
-"endfunction" {return END_FUNCTION;}
+"end_function" {return END_FUNCTION;}
 "function" {return START_FUNCTION;}
 "class" {return START_CLASS; }
 [_a-zA-Z][_a-zA-Z0-9]* {return ID;}
