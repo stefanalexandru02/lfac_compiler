@@ -75,19 +75,17 @@ declaratie_clasa : START_CLASS ID ':' declaratii_globale declaratii_functii END_
 program: START_PROGRAM execution_block END_PROGRAM
           ;
 
-execution_block : declaratii_globale execution_block_logic
-               ;
-
-execution_block_logic : function_calls assign_statements control_statements
-                    | assign_statements control_statements
-                    | control_statements
-                    |
-                    ;
-
-function_calls: function_call 
-               | function_calls function_call
+execution_block : execution_block execution_block_logic
+               | execution_block_logic
                |
                ;
+
+execution_block_logic : function_call 
+                    | assign_statement
+                    | control_statement
+                    | declaratie_globala ';'
+                    ;
+
 function_call : ID '(' ')' ';' 
                | ID '(' lista_apel ')' ';'
                ;
@@ -96,17 +94,8 @@ lista_apel : expression_element
            | lista_apel ',' expression_element
            ;
 
-assign_statements : assign_statement
-                    | assign_statements assign_statement 
-                    |
-                    ;
 assign_statement : ID ASSIGN expression ';'
                  ;
-
-control_statements :  control_statement 
-                    | control_statements control_statement
-                    |
-                    ;
 
 control_statement : if_statement
                     | while_statement
