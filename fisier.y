@@ -14,11 +14,23 @@ progr: declaratii bloc {printf("program corect sintactic\n");}
 
 /* global variables */
 
+declaratii_globale : declaratie_globala ';'
+                    | declaratii_globale declaratie_globala ';'
+                    ;
+declaratie_globala : TIP ID
+                    | TIP multiple_ids
+                    ;
+multiple_ids : ID 
+             | ID ',' multiple_ids 
+             ;
+
 /* end global variables */
 
 /* -------------------------------- */
 
 /* functions declaration */
+
+
 
 /* end functions declaration */
 
@@ -67,9 +79,7 @@ declaratie : TIP ID
            | CLASS_DEFINE ID '(' ')'
            | CLASS_DEFINE multiple_ids
            ;
-multiple_ids : ID 
-             | ID ',' multiple_ids 
-             ;
+
 
 lista_param : param
             | lista_param ','  param 
