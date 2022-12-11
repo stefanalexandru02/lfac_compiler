@@ -4,7 +4,7 @@ extern FILE* yyin;
 extern char* yytext;
 extern int yylineno;
 %}
-%token ID TIP BGIN END ASSIGN NR END_CLASS START_FUNCTION END_FUNCTION OPERATORS IF_STATEMENT WHILE_STATEMENT FOR_STATEMENT START_CLASS START_PROGRAM END_PROGRAM
+%token ID TIP BGIN END ASSIGN NR END_CLASS START_FUNCTION END_FUNCTION COMPARATORS IF_STATEMENT WHILE_STATEMENT FOR_STATEMENT START_CLASS START_PROGRAM END_PROGRAM
 %start progr
 %%
 progr: program_structure {printf("program corect sintactic\n");}
@@ -75,12 +75,47 @@ declaratie_clasa : START_CLASS ID ':' declaratii_globale declaratii_functii END_
 
 /* main */
 
-program: START_PROGRAM END_PROGRAM
+program: START_PROGRAM expression END_PROGRAM 
+     | START_PROGRAM END_PROGRAM
+               ;
 
 /* end main */
 
 /* -------------------------------- */
 
+/* expression */
+
+expression : expression_element 
+          | expression_element '+' expression_element
+          | expression_element '-' expression_element
+          | expression_element '*' expression_element
+          | expression_element '/' expression_element
+          | '(' expression ')' '+' '(' expression ')'
+          | '(' expression ')' '-' '(' expression ')'
+          | '(' expression ')' '*' '(' expression ')'
+          | '(' expression ')' '/' '(' expression ')'
+          | '(' expression ')' '+' expression_element
+          | '(' expression ')' '-' expression_element
+          | '(' expression ')' '*' expression_element
+          | '(' expression ')' '/' expression_element
+          | expression_element '+' '(' expression ')'
+          | expression_element '-' '(' expression ')'
+          | expression_element '*' '(' expression ')'
+          | expression_element '/' '(' expression ')'
+          | expression '+' expression
+          | expression '-' expression
+          | expression '*' expression
+          | expression '/' expression
+          | '(' expression ')'
+          ;
+
+expression_element : ID
+                    | NR
+                    ;
+
+/* end expression */
+
+/* -------------------------------- */
 
 declaratii :  declaratie ';'
 	   | declaratii declaratie ';'
@@ -130,10 +165,10 @@ while_statement : WHILE_STATEMENT boolean_expression ':' list END
 for_statement : FOR_STATEMENT assign_statement ';' boolean_expression ';' assign_statement ':' list END
               ;
 
-boolean_expression : ID OPERATORS ID
-                   | NR OPERATORS ID
-                   | ID OPERATORS NR
-                   | NR OPERATORS NR
+boolean_expression : ID COMPARATORS ID
+                   | NR COMPARATORS ID
+                   | ID COMPARATORS NR
+                   | NR COMPARATORS NR
                    ;
 
 lista_apel : NR

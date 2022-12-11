@@ -6,6 +6,8 @@ bool asb;
 
 function int sum():
 
+end_function
+
 class student:
 
 int a;
