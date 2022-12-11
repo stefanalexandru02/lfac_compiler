@@ -10,6 +10,34 @@ extern int yylineno;
 progr: declaratii bloc {printf("program corect sintactic\n");}
      ;
 
+/* -------------------------------- */
+
+/* global variables */
+
+/* end global variables */
+
+/* -------------------------------- */
+
+/* functions declaration */
+
+/* end functions declaration */
+
+/* -------------------------------- */
+
+/* custom data types declaration */
+
+/* end custom data types declaration */
+
+/* -------------------------------- */
+
+/* main */
+
+/* end main */
+
+/* -------------------------------- */
+
+
+
 declaratii :  declaratie ';'
 	   | declaratii declaratie ';'
         | clasa ';'
