@@ -5,6 +5,7 @@
 %option noyywrap
 %%
 "int"|"float"|"char"|"string"|"bool"|"int[]"|"float[]"|"char[]"|"string[]"|"bool[]" {return TIP;}
+"const" {return CONST;}
 
 "begin" {return BGIN;}
 "end" {return END;}
