@@ -9,7 +9,7 @@ compiler:
 	yacc -d fisier.y 
 	lex  fisier.l
 	gcc lex.yy.c  y.tab.c  -o ex
-	./ex file.in
+	./ex tests/test1.in
 
 clean:
 	rm -f ex lex.yy.c y.tab.c y.tab.h

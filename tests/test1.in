@@ -1,0 +1,13 @@
+int[] x, y, z;
+int a;
+char c;
+char[] test;
+bool asb;
+
+function int sum():
+
+endfunction
+
+function int sum(char a, char b):
+
+endfunction

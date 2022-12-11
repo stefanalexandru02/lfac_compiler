@@ -12,7 +12,7 @@
 "while" { return WHILE_STATEMENT; }
 "for" { return FOR_STATEMENT; }
 "endfunction" {return END_FUNCTION;}
-$[_a-zA-Z][_a-zA-Z0-9]* {return FUNCTION_DEFINE;}
+"function" {return START_FUNCTION;}
 [_a-zA-Z][_a-zA-Z0-9]* {return ID;}
 #[_a-zA-Z][_a-zA-Z0-9]* {return CLASS_DEFINE;}
 "=" {return ASSIGN;}
