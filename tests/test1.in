@@ -29,5 +29,6 @@ x = 123;
 int a;
 char c;
 a = 2 + 3;
+b = 7 + 8;
 
 end_program

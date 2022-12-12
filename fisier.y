@@ -104,7 +104,7 @@ lista_apel : expression_element
            | lista_apel ',' expression_element
            ;
 
-assign_statement : variable ASSIGN expression ';'
+assign_statement : variable ASSIGN expression ';' {printf("%d \n", $3);}
                  ;
 
 control_statement : if_statement
@@ -136,32 +136,32 @@ for_statement : START_FOR assign_statement boolean_expression ';' assign_stateme
 boolean_expression : expression COMPARATORS expression
                     ;
 
-expression : expression_element 
-          | expression_element '+' expression_element {$$=$1+$3;  printf("%d %d \n", $1, $3);}
-          | expression_element '-' expression_element
-          | expression_element '*' expression_element
-          | expression_element '/' expression_element
-          | '(' expression ')' '+' '(' expression ')'
-          | '(' expression ')' '-' '(' expression ')'
-          | '(' expression ')' '*' '(' expression ')'
-          | '(' expression ')' '/' '(' expression ')'
-          | '(' expression ')' '+' expression_element
-          | '(' expression ')' '-' expression_element
-          | '(' expression ')' '*' expression_element
-          | '(' expression ')' '/' expression_element
-          | expression_element '+' '(' expression ')'
-          | expression_element '-' '(' expression ')'
-          | expression_element '*' '(' expression ')'
-          | expression_element '/' '(' expression ')'
-          | expression '+' expression
-          | expression '-' expression
-          | expression '*' expression
-          | expression '/' expression
-          | '(' expression ')'
+expression : expression_element {$$=$1;}
+          | expression_element '+' expression_element {$$=$1+$3;  }
+          | expression_element '-' expression_element {$$=$1-$3;  }
+          | expression_element '*' expression_element {$$=$1*$3;  }
+          | expression_element '/' expression_element {$$=$1/$3;  }
+          | '(' expression ')' '+' '(' expression ')' {$$=$2+$6;  }
+          | '(' expression ')' '-' '(' expression ')' {$$=$2-$6;  }
+          | '(' expression ')' '*' '(' expression ')' {$$=$2*$6;  }
+          | '(' expression ')' '/' '(' expression ')' {$$=$2/$6;  }
+          | '(' expression ')' '+' expression_element {$$=$2+$5;  }
+          | '(' expression ')' '-' expression_element {$$=$2-$5;  }
+          | '(' expression ')' '*' expression_element {$$=$2*$5;  }
+          | '(' expression ')' '/' expression_element {$$=$2/$5;  }
+          | expression_element '+' '(' expression ')' {$$=$1+$4;  }
+          | expression_element '-' '(' expression ')' {$$=$1-$4;  }
+          | expression_element '*' '(' expression ')' {$$=$1*$4;  }
+          | expression_element '/' '(' expression ')' {$$=$1/$4;  }
+          | expression '+' expression {$$=$1+$3;  }
+          | expression '-' expression {$$=$1-$3;  }
+          | expression '*' expression {$$=$1*$3;  }
+          | expression '/' expression {$$=$1/$3;  }
+          | '(' expression ')' {$$=$2;}
           ;
 
 expression_element : variable
-                    | NR {$$=$1; printf("%d\n", $$); }
+                    | NR {$$=$1; }
                     | function_call
                     ;
 
