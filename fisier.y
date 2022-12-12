@@ -22,7 +22,9 @@ declaratii_globale : declaratie_globala ';'
                     |
                     ;
 declaratie_globala : TIP ID
+                    | ID ID  /* valideaza prin tabela de simboluri pentru tipuri de date custom */
                     | TIP multiple_ids
+                    | 
                     ;
 multiple_ids : ID 
              | ID ',' multiple_ids 
@@ -80,21 +82,21 @@ execution_block : execution_block execution_block_logic
                |
                ;
 
-execution_block_logic : function_call 
+execution_block_logic : function_call ';'
                     | assign_statement
                     | control_statement
                     | declaratie_globala ';'
                     ;
 
-function_call : ID '(' ')' ';' 
-               | ID '(' lista_apel ')' ';'
+function_call : variable '(' ')'
+               | variable '(' lista_apel ')'
                ;
 
 lista_apel : expression_element
            | lista_apel ',' expression_element
            ;
 
-assign_statement : ID ASSIGN expression ';'
+assign_statement : variable ASSIGN expression ';'
                  ;
 
 control_statement : if_statement
@@ -150,50 +152,18 @@ expression : expression_element
           | '(' expression ')'
           ;
 
-expression_element : ID
+expression_element : variable
                     | NR
+                    | function_call
                     ;
+
+variable: ID |
+          ID '.' ID;
 
 /* end expression */
 
 /* -------------------------------- */
 
-declaratii :  declaratie ';'
-	   | declaratii declaratie ';'
-	   ;
-declaratii_clasa_intern :  declaratie ';'
-                        | declaratii_clasa_intern declaratie ';'
-                        ;        
-declaratii_functie_intern :  declaratie ';'
-	                     | declaratii_functie_intern declaratie ';'
-                          | list ';'
-                          | declaratii_functie_intern list;
-                          ;
-declaratie : TIP ID 
-           | TIP ID '(' lista_param ')'
-           | TIP ID '(' ')'
-           | TIP multiple_ids
-           ;
-
-/* bloc */
-bloc : BGIN list END  
-     ;
-     
-/* lista instructiuni */
-list :  statement ';' 
-     | list statement ';'
-     ;
-
-/* instructiune */
-statement: 		 
-         ID '(' lista_apel ')'
-         | ID'.'ID ASSIGN ID
-         | ID'.'ID ASSIGN NR  		 
-         | ID'.'ID '(' lista_apel ')'
-         | ID'.'ID '(' ')'
-         | if_statement
-         | while_statement
-         ; 
 %%
 int yyerror(char * s){
 printf("eroare: %s la linia:%d\n",s,yylineno);

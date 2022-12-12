@@ -4,6 +4,8 @@ char c;
 char[] test;
 bool asb;
 
+student s;
+
 function int sum():
 
 end_function
@@ -28,5 +30,10 @@ x();
 x = 123;
 int a;
 char c;
+while(s.x == 1)
+{
+    int x;
+    s.x = funct(x);
+}end_while
 
 end_program
