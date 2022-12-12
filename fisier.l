@@ -20,7 +20,7 @@
 "end_class" {return END_CLASS;}
 
 [_a-zA-Z][_a-zA-Z0-9]* {return ID;}
-[0-9]+ {return NR;}
+[0-9]+ {yylval=atoi(yytext); return NR;}
 
 "if(" { return START_IF; }
 "}end_if" {return END_IF; }

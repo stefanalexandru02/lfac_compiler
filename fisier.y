@@ -5,7 +5,15 @@ extern char* yytext;
 extern int yylineno;
 %}
 %token CONST ID TIP BGIN END ASSIGN NR END_CLASS START_FUNCTION END_FUNCTION COMPARATORS START_IF START_WHILE START_FOR START_CLASS START_PROGRAM END_PROGRAM END_IF END_FOR END_WHILE
+%left '+'
+%left '*'
+%left '-'
+%left '/'
+
 %start progr
+
+
+
 %%
 progr: program_structure {printf("program corect sintactic\n");}
      ;
@@ -129,7 +137,7 @@ boolean_expression : expression COMPARATORS expression
                     ;
 
 expression : expression_element 
-          | expression_element '+' expression_element
+          | expression_element '+' expression_element {$$=$1+$3;  printf("%d %d \n", $1, $3);}
           | expression_element '-' expression_element
           | expression_element '*' expression_element
           | expression_element '/' expression_element
@@ -153,7 +161,7 @@ expression : expression_element
           ;
 
 expression_element : variable
-                    | NR
+                    | NR {$$=$1; printf("%d\n", $$); }
                     | function_call
                     ;
 

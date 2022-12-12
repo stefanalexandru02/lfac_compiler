@@ -6,6 +6,8 @@ bool asb;
 
 function int sum():
 
+
+
 end_function
 
 class student:
@@ -16,5 +18,8 @@ char[] dfr;
 
 end_class
 
-start_program
+start_program 
+
+c = 1 + 1;
+
 end_program
