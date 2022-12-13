@@ -3,7 +3,7 @@ int a;
 char c;
 char[] test;
 bool asb;
-
+const int a = 10 ;
 function int sum(int x, int b):
 
 end_function
@@ -24,7 +24,6 @@ end_class
 start_program
 
 int x;
-x();
 x = 123;
 int a;
 char c;

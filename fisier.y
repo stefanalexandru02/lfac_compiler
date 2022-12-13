@@ -15,6 +15,7 @@ struct dataType {
         char * data_type;
         char * type;
         int line_no;
+        void * value;
 } symbol_table[4000];
 
 int count=0;
@@ -24,7 +25,7 @@ char type[10];
 int has_semantic_analysis_errors = 0;
 
 %}
-%union { struct var_name { 
+%union { struct symbol_var { 
 			char *str_val; 
                   int num_val;
 		} nd_obj;
@@ -56,9 +57,11 @@ declaratii_globale : declaratie_globala ';'
                     | declaratii_globale declaratie_globala ';'
                     |
                     ;
+
 declaratie_globala : TIP ID { add('V', $1.str_val, $2.str_val); }
                     | ID ID  /* TODO valideaza prin tabela de simboluri pentru tipuri de date custom */
                     | TIP multiple_ids
+                    | CONST TIP ID ASSIGN expression { add('C', $2.str_val, $3.str_val, $5);}
                     | 
                     ;
 multiple_ids : ID 
@@ -274,4 +277,8 @@ void add(char c, char* type, char* id) {
 			count++;
 		}
 	}
+      else {
+            printf("Symbol %s on line %d is already defined\n",id, yylineno);
+            has_semantic_analysis_errors = 1;
+      }
 }
