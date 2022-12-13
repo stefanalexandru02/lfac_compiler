@@ -25,6 +25,7 @@ int has_semantic_analysis_errors = 0;
 %union { struct symbol_var { 
 			char *str_val; 
                   int num_val;
+                  void * linked_symbol;
 		} nd_obj;
 	} 
 
@@ -34,8 +35,8 @@ int add(char c, char* type, char* id);
 int search(char *, char);
 %}
 
-%token<nd_obj> CONST ID TIP BGIN END ASSIGN NR END_CLASS START_FUNCTION END_FUNCTION COMPARATORS START_IF START_WHILE START_FOR START_CLASS START_PROGRAM END_PROGRAM END_IF END_FOR END_WHILE
-%type<nd_obj> expression_element expression function_call variable
+%token<nd_obj> CONST ID TIP BGIN END ASSIGN NR NR_F END_CLASS START_FUNCTION END_FUNCTION COMPARATORS START_IF START_WHILE START_FOR START_CLASS START_PROGRAM END_PROGRAM END_IF END_FOR END_WHILE
+%type<nd_obj> expression_element expression function_call variable multiple_values vectorizable_value
 %left '+'
 %left '*'
 %left '-'
@@ -65,12 +66,32 @@ declaratie_globala : TIP ID { add('V', $1.str_val, $2.str_val); }
                     | ID ID  /* TODO valideaza prin tabela de simboluri pentru tipuri de date custom */
                     | TIP multiple_ids
                     | CONST TIP ID ASSIGN expression { add_with_value('C', $2.str_val, $3.str_val, $5);}
-                    | TIP ID ASSIGN expression { add_with_value('C', $1.str_val, $2.str_val, $4);}
-                    | 
+                    | TIP ID ASSIGN expression { add_with_value('V', $1.str_val, $2.str_val, $4); }
+                    | TIP ID ASSIGN multiple_values { 
+                        if($4.linked_symbol)
+                        {
+                              if(strcmp($1.str_val, "int[]") == 0) { 
+                                    
+                              } else { 
+                                    has_semantic_analysis_errors = 1; 
+                                    printf("Initialization not valid on line %d with type %s\n", yylineno, $1.str_val);
+                              }
+                        } else {
+                              add_with_value('V', $1.str_val, $2.str_val, $4);
+                        }
+                     } 
+                    |
                     ;
-multiple_ids : ID 
+multiple_ids : ID
              | ID ',' multiple_ids 
              ;
+
+multiple_values : vectorizable_value {$$=$1; }
+                  | vectorizable_value ',' multiple_values {$$ = $1; $$.linked_symbol = &$3; }
+                  ;        
+
+vectorizable_value : NR { $$ = $1; }
+                  | NR_F { $$ = $1; }                  
 
 /* end global variables */
 
@@ -195,7 +216,8 @@ expression : expression_element {$$.num_val=$1.num_val;}
           ;
 
 expression_element : variable
-                    | NR {$$=$1; }
+                    | NR { $$=$1; }
+                    | NR_F { $$ = $1; }
                     | function_call
                     ;
 
@@ -229,6 +251,14 @@ int main(int argc, char** argv){
                   else if(strcmp(symbol_table[i].data_type, "char") == 0)
                   {
                         printf("%s\t%s\t%s\t%d\t%c\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, symbol_table[i].value);
+                  }
+                  else if(strcmp(symbol_table[i].data_type, "float") == 0)
+                  {
+                        printf("%s\t%s\t%s\t%d\t%.6f\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, atof(symbol_table[i].value));
+                  }
+                  else if(strcmp(symbol_table[i].data_type, "char[]") == 0)
+                  {
+                        printf("%s\t%s\t%s\t%d\t%s\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, symbol_table[i].value);
                   }
                   else{
                         printf("%s\t%s\t%s\t%d\t%s\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, "TYPE NOT SUPPORTED");
@@ -311,9 +341,22 @@ int add_with_value(char c, char* type, char* id, struct symbol_var variable) {
             {
                   symbol_table[count-1].value = variable.num_val;
             }
+            if(strcmp(type, "float") == 0)
+            {
+                  symbol_table[count-1].value = variable.str_val;
+            }
             if(strcmp(type, "char") == 0)
             {
+                  if(strlen(variable.str_val) != 1)
+                  {
+                        printf("%s is not a valid char on line %d\n", variable.str_val, yylineno);
+                        has_semantic_analysis_errors = 1;
+                  }
                   symbol_table[count-1].value = variable.str_val[0];
+            }
+            if(strcmp(type, "char[]") == 0)
+            {
+                  symbol_table[count-1].value = variable.str_val;
             }
       }
 }

@@ -3,21 +3,21 @@ char c;
 char[] test;
 bool asb;
 const int a = 10 ;
+int[] iv = 12,343,141;
+int[] iv = 343,141;
 int ti = 123;
 
-char c_t = 2;
+float f = 123.123;
+
+char c_t = 1;
+char[] str = Salut;
 
 function int sum(int x, int b):
 
 end_function
 
-function int sum(char a, char b):
-
-end_function
-
 class student:
 
-int a;
 function int multiply(int b):
 
 end_function
@@ -28,8 +28,6 @@ start_program
 
 int x;
 x = 123;
-int a;
-char c;
 a = 2 + 3;
 b = 7 + 8;
 sum(12);

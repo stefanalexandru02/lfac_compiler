@@ -5,7 +5,7 @@
 %}
 %option noyywrap
 %%
-"int"|"float"|"char"|"string"|"bool"|"int[]"|"float[]"|"char[]"|"string[]"|"bool[]" { yylval.nd_obj.str_val = strdup(yytext); return TIP; }
+"int"|"float"|"char"|"bool"|"int[]"|"float[]"|"char[]"|"bool[]" { yylval.nd_obj.str_val = strdup(yytext); return TIP; }
 "const" {return CONST;}
 
 "begin" {yylval.nd_obj.str_val = strdup(yytext);return BGIN;}
@@ -22,6 +22,7 @@
 
 [_a-zA-Z][_a-zA-Z0-9]* { yylval.nd_obj.str_val = strdup(yytext); return ID;}
 [0-9]+ { yylval.nd_obj.num_val=atoi(yytext); yylval.nd_obj.str_val = strdup(yytext); return NR;}
+[0-9]+.[0-9]+ { atof(yytext); yylval.nd_obj.str_val = strdup(yytext); return NR_F; }
 
 "if(" { yylval.nd_obj.str_val = strdup(yytext); return START_IF; }
 "}end_if" {yylval.nd_obj.str_val = strdup(yytext); return END_IF; }
