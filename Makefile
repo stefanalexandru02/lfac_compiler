@@ -5,6 +5,7 @@ CC = /usr/bin/gcc
 YACC = /usr/bin/yacc
 
 compiler:
+	clear
 	rm -f ex lex.yy.c y.tab.c y.tab.h
 	yacc -d fisier.y 
 	lex  fisier.l

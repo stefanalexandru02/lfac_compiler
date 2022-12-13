@@ -7,9 +7,6 @@ extern FILE* yyin;
 extern char* yytext;
 extern int yylineno;
 
-void add(char c, char* type, char* id);
-int search(char *, char);
-
 struct dataType {
         char * id_name;
         char * data_type;
@@ -30,6 +27,12 @@ int has_semantic_analysis_errors = 0;
                   int num_val;
 		} nd_obj;
 	} 
+
+%{
+int add_with_value(char c, char* type, char* id, struct symbol_var variable);
+int add(char c, char* type, char* id);
+int search(char *, char);
+%}
 
 %token<nd_obj> CONST ID TIP BGIN END ASSIGN NR END_CLASS START_FUNCTION END_FUNCTION COMPARATORS START_IF START_WHILE START_FOR START_CLASS START_PROGRAM END_PROGRAM END_IF END_FOR END_WHILE
 %type<nd_obj> expression_element expression function_call variable
@@ -61,7 +64,8 @@ declaratii_globale : declaratie_globala ';'
 declaratie_globala : TIP ID { add('V', $1.str_val, $2.str_val); }
                     | ID ID  /* TODO valideaza prin tabela de simboluri pentru tipuri de date custom */
                     | TIP multiple_ids
-                    | CONST TIP ID ASSIGN expression { add('C', $2.str_val, $3.str_val, $5);}
+                    | CONST TIP ID ASSIGN expression { add_with_value('C', $2.str_val, $3.str_val, $5);}
+                    | TIP ID ASSIGN expression { add_with_value('C', $1.str_val, $2.str_val, $4);}
                     | 
                     ;
 multiple_ids : ID 
@@ -212,11 +216,27 @@ int main(int argc, char** argv){
       yyparse();
       printf("\n\n");
 	printf("PHASE 1: SYMBOL TABLE \n\n");
-	printf("\nSYMBOL   DATATYPE   TYPE   LINE NUMBER \n");
-	printf("_______________________________________\n\n");
+	printf("\nSYMBOL   DATATYPE   TYPE   LINE NUMBER VALUE \n");
+	printf("____________________________________________\n\n");
 	int i=0;
 	for(i=0; i<count; i++) {
-		printf("%s\t%s\t%s\t%d\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no);
+            if(symbol_table[i].value)
+            {
+                  if(strcmp(symbol_table[i].data_type, "int") == 0)
+                  {
+                        printf("%s\t%s\t%s\t%d\t%d\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, symbol_table[i].value);
+                  }
+                  else if(strcmp(symbol_table[i].data_type, "char") == 0)
+                  {
+                        printf("%s\t%s\t%s\t%d\t%c\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, symbol_table[i].value);
+                  }
+                  else{
+                        printf("%s\t%s\t%s\t%d\t%s\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, "TYPE NOT SUPPORTED");
+                  }
+            }
+            else{
+                  printf("%s\t%s\t%s\t%d\t%s\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, "-");
+            }
 	}
 	for(i=0;i<count;i++) {
 		free(symbol_table[i].id_name);
@@ -245,7 +265,7 @@ int search(char *type, char c) {
 	return 0;
 }
 
-void add(char c, char* type, char* id) {
+int add(char c, char* type, char* id) {
       q=search(id, 0);
       if(!q) {
             if(c == 'K') {
@@ -264,7 +284,7 @@ void add(char c, char* type, char* id) {
 		}
 		else if(c == 'C') {
 			symbol_table[count].id_name=strdup(id);
-			symbol_table[count].data_type=strdup("CONST");
+			symbol_table[count].data_type=strdup(type);
 			symbol_table[count].line_no=yylineno;
 			symbol_table[count].type=strdup("Constant");
 			count++;
@@ -280,5 +300,20 @@ void add(char c, char* type, char* id) {
       else {
             printf("Symbol %s on line %d is already defined\n",id, yylineno);
             has_semantic_analysis_errors = 1;
+      }
+}
+
+int add_with_value(char c, char* type, char* id, struct symbol_var variable) {
+      int was_created = add(c, type, id);
+      if(was_created)
+      {
+            if(strcmp(type, "int") == 0)
+            {
+                  symbol_table[count-1].value = variable.num_val;
+            }
+            if(strcmp(type, "char") == 0)
+            {
+                  symbol_table[count-1].value = variable.str_val[0];
+            }
       }
 }

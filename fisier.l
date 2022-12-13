@@ -21,7 +21,7 @@
 "end_class" {return END_CLASS;}
 
 [_a-zA-Z][_a-zA-Z0-9]* { yylval.nd_obj.str_val = strdup(yytext); return ID;}
-[0-9]+ {yylval.nd_obj.num_val=atoi(yytext); return NR;}
+[0-9]+ { yylval.nd_obj.num_val=atoi(yytext); yylval.nd_obj.str_val = strdup(yytext); return NR;}
 
 "if(" { yylval.nd_obj.str_val = strdup(yytext); return START_IF; }
 "}end_if" {yylval.nd_obj.str_val = strdup(yytext); return END_IF; }
