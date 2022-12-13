@@ -71,7 +71,7 @@ declaratie_globala : TIP ID { add('V', $1.str_val, $2.str_val); }
                         if($4.linked_symbol)
                         {
                               if(strcmp($1.str_val, "int[]") == 0) { 
-                                    
+                                    add_with_value('V', $1.str_val, $2.str_val, $4);
                               } else { 
                                     has_semantic_analysis_errors = 1; 
                                     printf("Initialization not valid on line %d with type %s\n", yylineno, $1.str_val);
@@ -86,8 +86,8 @@ multiple_ids : ID
              | ID ',' multiple_ids 
              ;
 
-multiple_values : vectorizable_value {$$=$1; }
-                  | vectorizable_value ',' multiple_values {$$ = $1; $$.linked_symbol = &$3; }
+multiple_values : vectorizable_value {$$=$1; printf("DAAA %d\n", $$.num_val); }
+                  | vectorizable_value ',' multiple_values {$$ = $1; $$.linked_symbol = &$3; printf("DAAAxxx %d - %d\n", $1.num_val, $3.num_val); }
                   ;        
 
 vectorizable_value : NR { $$ = $1; }
@@ -341,11 +341,11 @@ int add_with_value(char c, char* type, char* id, struct symbol_var variable) {
             {
                   symbol_table[count-1].value = variable.num_val;
             }
-            if(strcmp(type, "float") == 0)
+            else if(strcmp(type, "float") == 0)
             {
                   symbol_table[count-1].value = variable.str_val;
             }
-            if(strcmp(type, "char") == 0)
+            else if(strcmp(type, "char") == 0)
             {
                   if(strlen(variable.str_val) != 1)
                   {
@@ -354,9 +354,21 @@ int add_with_value(char c, char* type, char* id, struct symbol_var variable) {
                   }
                   symbol_table[count-1].value = variable.str_val[0];
             }
-            if(strcmp(type, "char[]") == 0)
+            else if(strcmp(type, "char[]") == 0)
             {
                   symbol_table[count-1].value = variable.str_val;
+            }
+            else if(strcmp(type, "int[]") == 0)
+            {
+                  int values_cnt = 1;
+                  void *p = variable.linked_symbol;
+                  //((struct symbol_var*)&p)->num_val            
+
+                  //while(p)
+                  //{
+                  //      p = ((struct symbol_var)p).linked_symbol;
+                  //}
+                  printf("VECTOR HAS %d VALUES on LN %d\n", variable.num_val, yylineno);
             }
       }
 }
