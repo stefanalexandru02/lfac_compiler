@@ -15,6 +15,13 @@ struct dataType {
         void * value;
 } symbol_table[4000];
 
+struct function_signature_parameter { 
+      int function_id;
+      int parameter_order;
+      char * id_name;
+      char * type;
+} function_definition_symbol_table[4000];
+
 int count=0;
 int q;
 char type[10];
@@ -87,7 +94,13 @@ multiple_ids : ID
              ;
 
 multiple_values : vectorizable_value {$$=$1; printf("DAAA %d\n", $$.num_val); }
-                  | vectorizable_value ',' multiple_values {$$ = $1; $$.linked_symbol = &$3; printf("DAAAxxx %d - %d\n", $1.num_val, $3.num_val); }
+                  | vectorizable_value ',' multiple_values {
+                        $$ = $1; 
+                        int size = sizeof($$);
+                        $$.linked_symbol = malloc(size);
+                        memcpy($$.linked_symbol, &$3, size); 
+                        printf("DAAAxxx %d - %d\n", $1.num_val, $3.num_val); 
+                  }
                   ;        
 
 vectorizable_value : NR { $$ = $1; }
