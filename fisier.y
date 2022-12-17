@@ -79,7 +79,7 @@ declaratie_globala : TIP ID { add('V', $1.str_val, $2.str_val); }
                     | TIP ID ASSIGN '[' multiple_values ']' { 
                         if($5.linked_symbol)
                         {
-                              if(strcmp($1.str_val, "int[]") == 0) { 
+                              if(strcmp($1.str_val, "int[]") == 0 || strcmp($1.str_val, "float[]") == 0) { 
                                     add_with_value('V', $1.str_val, $2.str_val, $5);
                               } else { 
                                     has_semantic_analysis_errors = 1; 
@@ -270,7 +270,7 @@ int main(int argc, char** argv){
                   {
                         printf("%s\t%s\t%s\t%d\t%s\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, symbol_table[i].value);
                   }
-                  else if(strcmp(symbol_table[i].data_type, "int[]") == 0)
+                  else if(strcmp(symbol_table[i].data_type, "int[]") == 0 || strcmp(symbol_table[i].data_type, "float[]") == 0)
                   {
                         printf("%s\t%s\t%s\t%d\t%s\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, symbol_table[i].value);
                   }
@@ -372,7 +372,7 @@ int add_with_value(char c, char* type, char* id, struct symbol_var variable) {
             {
                   symbol_table[count-1].value = variable.str_val;
             }
-            else if(strcmp(type, "int[]") == 0)
+            else if(strcmp(type, "int[]") == 0 || strcmp(type, "float[]") == 0)
             {
                   char serialized[10000] = {0};
                   strcpy(serialized, "");

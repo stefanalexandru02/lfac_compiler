@@ -2,7 +2,7 @@ char c;
 char[] test;
 bool asb;
 const int a = 10 ;
-int[] iv = [12,343,141];
+float[] iv = [f12.5,f343.1,f141.2];
 int tiy = 123;
 int[] iiv = [343,141,89, 1234];
 int ti = 123;
