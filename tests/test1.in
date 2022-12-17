@@ -2,23 +2,26 @@ char c;
 char[] test;
 bool asb;
 const int a = 10 ;
-float[] iv = [f12.5,f343.1,f141.2];
+int[] iv = [12,343,141];
 int tiy = 123;
 int[] iiv = [343,141,89, 1234];
 int ti = 123;
-bool exista = 1;
-float fa = f123.123;
+
+float f = f123.123;
 
 char c_t = 1;
 char[] str = Salut;
-bool[] xx = [0,1,1];
-function int sum(int x, int b):
-
-end_function
 
 class student:
 
-function int multiply(int b):
+function int multiply2(int a, int b, int c, int d, char q, bool[] da):
+end_function
+
+function int multiply(int a, int b, int c, int d, char q, bool[] da):
+
+end_function
+
+function int multiply_empty():
 
 end_function
 

@@ -3,26 +3,11 @@
 #include<string.h>
 #include<stdlib.h>
 #include<ctype.h>
+#include "data_types.h"
 extern FILE* yyin;
 extern char* yytext;
 extern int yylineno;
 
-struct dataType {
-        char * id_name;
-        char * data_type;
-        char * type;
-        int line_no;
-        void * value;
-} symbol_table[4000];
-
-struct function_signature_parameter { 
-      int function_id;
-      int parameter_order;
-      char * id_name;
-      char * type;
-} function_definition_symbol_table[4000];
-
-int count=0;
 int q;
 char type[10];
 
@@ -41,12 +26,13 @@ int has_semantic_analysis_errors = 0;
 
 %{
 int add_with_value(char c, char* type, char* id, struct symbol_var variable);
+int add_func_with_parameters(char c, char* type, char* id);
 int add(char c, char* type, char* id);
 int search(char *, char);
 %}
 
 %token<nd_obj> CONST ID TIP BGIN END ASSIGN NR NR_F END_CLASS START_FUNCTION END_FUNCTION COMPARATORS START_IF START_WHILE START_FOR START_CLASS START_PROGRAM END_PROGRAM END_IF END_FOR END_WHILE
-%type<nd_obj> expression_element expression function_call variable multiple_values vectorizable_value
+%type<nd_obj> expression_element expression function_call variable multiple_values vectorizable_value declaratie_functie lista_param param
 %left '+'
 %left '*'
 %left '-'
@@ -57,7 +43,7 @@ int search(char *, char);
 
 
 %%
-progr: program_structure { if(has_semantic_analysis_errors) { printf("Eroare de compilare...\n"); } else { printf("Program corect sintactic\n"); } }
+progr: program_structure { if(has_semantic_analysis_errors) { printf("Eroare de compilare...\n"); } else { printf("\n\nProgram corect sintactic\n\n"); } }
      ;
 
 program_structure : declaratii_globale declaratii_functii declaratii_clase program
@@ -92,7 +78,7 @@ declaratie_globala : TIP ID { add('V', $1.str_val, $2.str_val); }
                     |
                     ;
 
-multiple_values : vectorizable_value {$$=$1; }
+multiple_values : vectorizable_value { $$=$1; }
                   | vectorizable_value ',' multiple_values {$$ = $1; $$.linked_symbol = &$3; }
                   ;  
 
@@ -115,17 +101,20 @@ declaratii_functii : declaratie_functie
                     ;
 
 declaratie_functie : START_FUNCTION TIP ID '(' ')' ':' execution_block_logic END_FUNCTION { add('F', $2.str_val, $3.str_val); }
-                    | START_FUNCTION TIP ID '(' lista_param ')' ':'execution_block_logic END_FUNCTION { add('F', $2.str_val, $3.str_val); }
-                    |START_FUNCTION TIP ID '(' ')' ':' END_FUNCTION { add('F', $2.str_val, $3.str_val); }
-                    | START_FUNCTION TIP ID '(' lista_param ')' ':' END_FUNCTION { add('F', $2.str_val, $3.str_val); }
+                    | START_FUNCTION TIP ID '(' lista_param ')' ':'execution_block_logic END_FUNCTION { add_func_with_parameters('F', $2.str_val, $3.str_val); }
+                    | START_FUNCTION TIP ID '(' ')' ':' END_FUNCTION { add('F', $2.str_val, $3.str_val); }
+                    | START_FUNCTION TIP ID '(' lista_param ')' ':' END_FUNCTION { add_func_with_parameters('F', $2.str_val, $3.str_val); }
                     ;
 
-lista_param : param
-            | lista_param ','  param 
+lista_param : function_param
+            | function_param ',' lista_param
             ;
             
-param : TIP ID
-      ; 
+function_param : TIP ID { 
+      temp_function_definition_table[temp_function_definition_cnt].type = strdup($1.str_val);
+      temp_function_definition_table[temp_function_definition_cnt].id = strdup($2.str_val);
+      temp_function_definition_cnt++;
+}; 
 
 /* end functions declaration */
 
@@ -248,51 +237,10 @@ printf("eroare: %s la linia:%d\n",s,yylineno);
 int main(int argc, char** argv){
       yyin=fopen(argv[1],"r");
       yyparse();
-      printf("\n\n");
-	printf("PHASE 1: SYMBOL TABLE \n\n");
-	printf("\nSYMBOL   DATATYPE   TYPE   LINE NUMBER VALUE \n");
-	printf("____________________________________________\n\n");
-	int i=0;
-	for(i=0; i<count; i++) {
-            if(symbol_table[i].value)
-            {
-                  if(strcmp(symbol_table[i].data_type, "int") == 0)
-                  {
-                        printf("%s\t%s\t%s\t%d\t%d\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, symbol_table[i].value);
-                  }
-                  else if(strcmp(symbol_table[i].data_type, "char") == 0)
-                  {
-                        printf("%s\t%s\t%s\t%d\t%c\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, symbol_table[i].value);
-                  }
-                  else if(strcmp(symbol_table[i].data_type, "float") == 0)
-                  {
-                        printf("%s\t%s\t%s\t%d\t%s\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, symbol_table[i].value);
-                  }
-                  else if(strcmp(symbol_table[i].data_type, "char[]") == 0 || strcmp(symbol_table[i].data_type, "bool[]") == 0)
-                  {
-                        printf("%s\t%s\t%s\t%d\t%s\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, symbol_table[i].value);
-                  }
-                  else if(strcmp(symbol_table[i].data_type, "int[]") == 0 || strcmp(symbol_table[i].data_type, "float[]") == 0)
-                  {
-                        printf("%s\t%s\t%s\t%d\t%s\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, symbol_table[i].value);
-                  }
-                  else if(strcmp(symbol_table[i].data_type, "bool") == 0)
-                  {
-                        printf("%s\t%s\t%s\t%d\t%s\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, symbol_table[i].value);
-                  }
-                  else{
-                        printf("%s\t%s\t%s\t%d\t%s\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, "TYPE NOT SUPPORTED");
-                  }
-            }
-            else{
-                  printf("%s\t%s\t%s\t%d\t%s\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, "-");
-            }
-	}
-	for(i=0;i<count;i++) {
-		free(symbol_table[i].id_name);
-		free(symbol_table[i].type);
-	}
-	printf("\n\n");
+      if(has_semantic_analysis_errors) { return; }
+
+      print_symbol_table();
+      print_function_symbol_table();
 } 
 
 int search(char *type, char c) {
@@ -431,5 +379,23 @@ int add_with_value(char c, char* type, char* id, struct symbol_var variable) {
                   symbol_table[count-1].value = variable.str_val;
             }
             
+      }
+}
+
+int add_func_with_parameters(char c, char* type, char* id)
+{
+      int was_created = add(c, type, id);
+      if(was_created)
+      {
+            for(int i = 0; i < temp_function_definition_cnt; i++)
+            {
+                  function_definition_symbol_table[function_definition_table_count].function_id = strdup(id);
+                  function_definition_symbol_table[function_definition_table_count].function_type = strdup(type);
+                  function_definition_symbol_table[function_definition_table_count].id = strdup(temp_function_definition_table[i].id);
+                  function_definition_symbol_table[function_definition_table_count].type = strdup(temp_function_definition_table[i].type);
+
+                  function_definition_table_count++;
+            }
+            temp_function_definition_cnt = 0;
       }
 }
