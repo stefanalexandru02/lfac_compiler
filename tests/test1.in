@@ -12,7 +12,7 @@ float fa = f123.123;
 char c_t = 1;
 char[] str = Salut;
 bool[] xx = [0,1,1];
-function int sum(int x, int b):
+function float sum(int x, int b):
   
 end_function
 
@@ -33,5 +33,7 @@ x = 123;
 a = 2 + 3;
 b = 7 + 8;
 sum(12);
+
+TypeOf(sum);
 
 end_program
