@@ -79,7 +79,7 @@ declaratie_globala : TIP ID { add('V', $1.str_val, $2.str_val); }
                     | TIP ID ASSIGN '[' multiple_values ']' { 
                         if($5.linked_symbol)
                         {
-                              if(strcmp($1.str_val, "int[]") == 0 || strcmp($1.str_val, "float[]") == 0) { 
+                              if(strcmp($1.str_val, "int[]") == 0 || strcmp($1.str_val, "float[]") == 0 || strcmp($1.str_val, "bool[]") == 0) { 
                                     add_with_value('V', $1.str_val, $2.str_val, $5);
                               } else { 
                                     has_semantic_analysis_errors = 1; 
@@ -266,11 +266,15 @@ int main(int argc, char** argv){
                   {
                         printf("%s\t%s\t%s\t%d\t%s\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, symbol_table[i].value);
                   }
-                  else if(strcmp(symbol_table[i].data_type, "char[]") == 0)
+                  else if(strcmp(symbol_table[i].data_type, "char[]") == 0 || strcmp(symbol_table[i].data_type, "bool[]") == 0)
                   {
                         printf("%s\t%s\t%s\t%d\t%s\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, symbol_table[i].value);
                   }
                   else if(strcmp(symbol_table[i].data_type, "int[]") == 0 || strcmp(symbol_table[i].data_type, "float[]") == 0)
+                  {
+                        printf("%s\t%s\t%s\t%d\t%s\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, symbol_table[i].value);
+                  }
+                  else if(strcmp(symbol_table[i].data_type, "bool") == 0)
                   {
                         printf("%s\t%s\t%s\t%d\t%s\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, symbol_table[i].value);
                   }
@@ -365,6 +369,7 @@ int add_with_value(char c, char* type, char* id, struct symbol_var variable) {
                   {
                         printf("%s is not a valid char on line %d\n", variable.str_val, yylineno);
                         has_semantic_analysis_errors = 1;
+                        return 0;
                   }
                   symbol_table[count-1].value = variable.str_val[0];
             }
@@ -372,16 +377,36 @@ int add_with_value(char c, char* type, char* id, struct symbol_var variable) {
             {
                   symbol_table[count-1].value = variable.str_val;
             }
-            else if(strcmp(type, "int[]") == 0 || strcmp(type, "float[]") == 0)
+            else if(strcmp(type, "int[]") == 0 || strcmp(type, "float[]") == 0 || strcmp(type, "bool[]") == 0)
             {
+                  int isBool = strcmp(type, "bool[]") == 0;
                   char serialized[10000] = {0};
                   strcpy(serialized, "");
                   int values_cnt = 1;
+                  if(isBool)
+                  {
+                        if(strlen(variable.str_val)!=1 || (variable.str_val[0]!='0' && variable.str_val[0]!='1'))
+                        {
+                              printf("%s is not a valid bool on line %d\n", variable.str_val, yylineno);
+                              has_semantic_analysis_errors = 1;
+                              return 0;
+                        }
+                  }
                   strcat(serialized, variable.str_val);
                   strcat(serialized, ",");
                   void *p = variable.linked_symbol;            
                   while(p)
                   {
+                        if(isBool)
+                        {
+                              if(strlen(((struct symbol_var*)p)->str_val)!=1 || (((struct symbol_var*)p)->str_val[0]!='0' && ((struct symbol_var*)p)->str_val[0]!='1'))
+                              {
+                                    printf("%s is not a valid bool on line %d\n", ((struct symbol_var*)p)->str_val, yylineno);
+                                    has_semantic_analysis_errors = 1;
+                                    return 0;
+                              }
+                        }
+
                         strcat(serialized, ((struct symbol_var*)p)->str_val);
                         strcat(serialized, ",");
 
@@ -393,5 +418,16 @@ int add_with_value(char c, char* type, char* id, struct symbol_var variable) {
                   symbol_table[count-1].value = (char*)malloc(sizeof(char) * strlen(serialized));
                   strcpy(symbol_table[count-1].value, serialized);
             }
+            else if(strcmp(type, "bool") == 0)
+            {
+                  if(strlen(variable.str_val)!=1 || (variable.str_val[0]!='0' && variable.str_val[0]!='1'))
+                  {
+                        printf("%s is not a valid bool on line %d\n", variable.str_val, yylineno);
+                        has_semantic_analysis_errors = 1;
+                        return 0;
+                  }
+                  symbol_table[count-1].value = variable.str_val;
+            }
+            
       }
 }
