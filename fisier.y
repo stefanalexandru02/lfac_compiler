@@ -114,7 +114,9 @@ declaratii_functii : declaratie_functie
                     |
                     ;
 
-declaratie_functie : START_FUNCTION TIP ID '(' ')' ':' END_FUNCTION { add('F', $2.str_val, $3.str_val); }
+declaratie_functie : START_FUNCTION TIP ID '(' ')' ':' execution_block_logic END_FUNCTION { add('F', $2.str_val, $3.str_val); }
+                    | START_FUNCTION TIP ID '(' lista_param ')' ':'execution_block_logic END_FUNCTION { add('F', $2.str_val, $3.str_val); }
+                    |START_FUNCTION TIP ID '(' ')' ':' END_FUNCTION { add('F', $2.str_val, $3.str_val); }
                     | START_FUNCTION TIP ID '(' lista_param ')' ':' END_FUNCTION { add('F', $2.str_val, $3.str_val); }
                     ;
 
@@ -165,7 +167,7 @@ function_call : variable '(' ')' { if(search($1.str_val, 'F') != -1) { has_seman
                | variable '(' lista_apel ')'
                ;
 
-lista_apel : expression_element
+lista_apel : expression_element 
            | lista_apel ',' expression_element
            ;
 
