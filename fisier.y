@@ -26,6 +26,9 @@ int count=0;
 int q;
 char type[10];
 
+void* temp_vector[100000];
+int temp_vector_size;
+
 int has_semantic_analysis_errors = 0;
 
 %}
@@ -71,10 +74,10 @@ declaratii_globale : declaratie_globala ';'
 
 declaratie_globala : TIP ID { add('V', $1.str_val, $2.str_val); }
                     | ID ID  /* TODO valideaza prin tabela de simboluri pentru tipuri de date custom */
-                    | TIP multiple_ids
                     | CONST TIP ID ASSIGN expression { add_with_value('C', $2.str_val, $3.str_val, $5);}
                     | TIP ID ASSIGN expression { add_with_value('V', $1.str_val, $2.str_val, $4); }
                     | TIP ID ASSIGN multiple_values { 
+                        printf("MVR\n");
                         if($4.linked_symbol)
                         {
                               if(strcmp($1.str_val, "int[]") == 0) { 
@@ -89,22 +92,17 @@ declaratie_globala : TIP ID { add('V', $1.str_val, $2.str_val); }
                      } 
                     |
                     ;
+
+multiple_values : vectorizable_value '~' multiple_values { printf("Q2 - %d\n", $1.num_val); }
+                  | vectorizable_value { printf("Q1 - %d\n", $1.num_val); }
+                  ;  
+
 multiple_ids : ID
              | ID ',' multiple_ids 
-             ;
+             ;      
 
-multiple_values : vectorizable_value {$$=$1; printf("DAAA %d\n", $$.num_val); }
-                  | vectorizable_value ',' multiple_values {
-                        $$ = $1; 
-                        int size = sizeof($$);
-                        $$.linked_symbol = malloc(size);
-                        memcpy($$.linked_symbol, &$3, size); 
-                        printf("DAAAxxx %d - %d\n", $1.num_val, $3.num_val); 
-                  }
-                  ;        
-
-vectorizable_value : NR { $$ = $1; }
-                  | NR_F { $$ = $1; }                  
+vectorizable_value : NR { $$ = $1; printf("H1-%d\n", $$.num_val); }
+                  | NR_F { $$ = $1; printf("H2-%d\n", $$.num_val); }                  
 
 /* end global variables */
 
@@ -373,15 +371,15 @@ int add_with_value(char c, char* type, char* id, struct symbol_var variable) {
             }
             else if(strcmp(type, "int[]") == 0)
             {
-                  int values_cnt = 1;
-                  void *p = variable.linked_symbol;
+                  //int values_cnt = 1;
+                  //void *p = variable.linked_symbol;
                   //((struct symbol_var*)&p)->num_val            
 
                   //while(p)
                   //{
                   //      p = ((struct symbol_var)p).linked_symbol;
                   //}
-                  printf("VECTOR HAS %d VALUES on LN %d\n", variable.num_val, yylineno);
+                  //printf("VECTOR HAS %d VALUES on LN %d\n", variable.num_val, yylineno);
             }
       }
 }
