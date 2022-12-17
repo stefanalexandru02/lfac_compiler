@@ -76,33 +76,32 @@ declaratie_globala : TIP ID { add('V', $1.str_val, $2.str_val); }
                     | ID ID  /* TODO valideaza prin tabela de simboluri pentru tipuri de date custom */
                     | CONST TIP ID ASSIGN expression { add_with_value('C', $2.str_val, $3.str_val, $5);}
                     | TIP ID ASSIGN expression { add_with_value('V', $1.str_val, $2.str_val, $4); }
-                    | TIP ID ASSIGN multiple_values { 
-                        printf("MVR\n");
-                        if($4.linked_symbol)
+                    | TIP ID ASSIGN '[' multiple_values ']' { 
+                        if($5.linked_symbol)
                         {
                               if(strcmp($1.str_val, "int[]") == 0) { 
-                                    add_with_value('V', $1.str_val, $2.str_val, $4);
+                                    add_with_value('V', $1.str_val, $2.str_val, $5);
                               } else { 
                                     has_semantic_analysis_errors = 1; 
                                     printf("Initialization not valid on line %d with type %s\n", yylineno, $1.str_val);
                               }
                         } else {
-                              add_with_value('V', $1.str_val, $2.str_val, $4);
+                              add_with_value('V', $1.str_val, $2.str_val, $5);
                         }
                      } 
                     |
                     ;
 
-multiple_values : vectorizable_value '~' multiple_values { printf("Q2 - %d\n", $1.num_val); }
-                  | vectorizable_value { printf("Q1 - %d\n", $1.num_val); }
+multiple_values : vectorizable_value {$$=$1; }
+                  | vectorizable_value ',' multiple_values {$$ = $1; $$.linked_symbol = &$3; }
                   ;  
+
+vectorizable_value : NR { $$ = $1; }
+                  | NR_F { $$ = $1; }
 
 multiple_ids : ID
              | ID ',' multiple_ids 
              ;      
-
-vectorizable_value : NR { $$ = $1; printf("H1-%d\n", $$.num_val); }
-                  | NR_F { $$ = $1; printf("H2-%d\n", $$.num_val); }                  
 
 /* end global variables */
 
@@ -371,15 +370,16 @@ int add_with_value(char c, char* type, char* id, struct symbol_var variable) {
             }
             else if(strcmp(type, "int[]") == 0)
             {
-                  //int values_cnt = 1;
-                  //void *p = variable.linked_symbol;
-                  //((struct symbol_var*)&p)->num_val            
-
-                  //while(p)
-                  //{
-                  //      p = ((struct symbol_var)p).linked_symbol;
-                  //}
-                  //printf("VECTOR HAS %d VALUES on LN %d\n", variable.num_val, yylineno);
+                  int values_cnt = 1;
+                  printf("VECTOR HAS %d VALUES on LN %d\n", variable.num_val, yylineno);
+                  void *p = variable.linked_symbol;            
+                  while(p)
+                  {
+                        printf("VECTOR HAS %d VALUES on LN %d\n", ((struct symbol_var*)p)->num_val, yylineno);
+                        p = ((struct symbol_var*)p)->linked_symbol;
+                        values_cnt++;
+                  }
+                  printf("Vector has %d values \n", values_cnt);
             }
       }
 }

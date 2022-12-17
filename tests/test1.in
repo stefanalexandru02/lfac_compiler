@@ -2,11 +2,11 @@ char c;
 char[] test;
 bool asb;
 const int a = 10 ;
-int[] iv = 12~343~141;
-int[] iiv = 343~141;
+int[] iv = [12,343,141];
+int[] iiv = [343,141];
 int ti = 123;
 
-float f = 123.123;
+float f = f123.123;
 
 char c_t = 1;
 char[] str = Salut;

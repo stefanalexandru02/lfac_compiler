@@ -22,7 +22,7 @@
 
 [_a-zA-Z][_a-zA-Z0-9]* { yylval.nd_obj.str_val = strdup(yytext); return ID;}
 [0-9]+ { yylval.nd_obj.num_val=atoi(yytext); yylval.nd_obj.str_val = strdup(yytext); return NR;}
-[0-9]+.[0-9]+ { atof(yytext); yylval.nd_obj.str_val = strdup(yytext); return NR_F; }
+f[0-9]+.[0-9]+ { atof(yytext); yylval.nd_obj.str_val = strdup(yytext); yylval.nd_obj.num_val = 0; return NR_F; }
 
 "if(" { yylval.nd_obj.str_val = strdup(yytext); return START_IF; }
 "}end_if" {yylval.nd_obj.str_val = strdup(yytext); return END_IF; }
