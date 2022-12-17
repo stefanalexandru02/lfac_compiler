@@ -201,7 +201,7 @@ for_statement : START_FOR assign_statement boolean_expression ';' assign_stateme
 boolean_expression : expression COMPARATORS expression
                     ;
 
-expression : expression_element {$$.num_val=$1.num_val;}
+expression : expression_element {$$=$1;}
           | expression_element '+' expression_element {$$.num_val=$1.num_val+$3.num_val;  }
           | expression_element '-' expression_element {$$.num_val=$1.num_val-$3.num_val;  }
           | expression_element '*' expression_element {$$.num_val=$1.num_val*$3.num_val;  }
@@ -264,7 +264,7 @@ int main(int argc, char** argv){
                   }
                   else if(strcmp(symbol_table[i].data_type, "float") == 0)
                   {
-                        printf("%s\t%s\t%s\t%d\t%.6f\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, atof(symbol_table[i].value));
+                        printf("%s\t%s\t%s\t%d\t%s\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, symbol_table[i].value);
                   }
                   else if(strcmp(symbol_table[i].data_type, "char[]") == 0)
                   {
@@ -357,7 +357,7 @@ int add_with_value(char c, char* type, char* id, struct symbol_var variable) {
             }
             else if(strcmp(type, "float") == 0)
             {
-                  symbol_table[count-1].value = variable.str_val;
+                  symbol_table[count-1].value = variable.str_val; 
             }
             else if(strcmp(type, "char") == 0)
             {
