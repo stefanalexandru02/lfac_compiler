@@ -270,6 +270,10 @@ int main(int argc, char** argv){
                   {
                         printf("%s\t%s\t%s\t%d\t%s\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, symbol_table[i].value);
                   }
+                  else if(strcmp(symbol_table[i].data_type, "int[]") == 0)
+                  {
+                        printf("%s\t%s\t%s\t%d\t%s\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, symbol_table[i].value);
+                  }
                   else{
                         printf("%s\t%s\t%s\t%d\t%s\t\n", symbol_table[i].id_name, symbol_table[i].data_type, symbol_table[i].type, symbol_table[i].line_no, "TYPE NOT SUPPORTED");
                   }
@@ -370,16 +374,24 @@ int add_with_value(char c, char* type, char* id, struct symbol_var variable) {
             }
             else if(strcmp(type, "int[]") == 0)
             {
+                  char serialized[10000] = {0};
+                  strcpy(serialized, "");
                   int values_cnt = 1;
-                  printf("VECTOR HAS %d VALUES on LN %d\n", variable.num_val, yylineno);
+                  strcat(serialized, variable.str_val);
+                  strcat(serialized, ",");
                   void *p = variable.linked_symbol;            
                   while(p)
                   {
-                        printf("VECTOR HAS %d VALUES on LN %d\n", ((struct symbol_var*)p)->num_val, yylineno);
+                        strcat(serialized, ((struct symbol_var*)p)->str_val);
+                        strcat(serialized, ",");
+
+
                         p = ((struct symbol_var*)p)->linked_symbol;
                         values_cnt++;
                   }
-                  printf("Vector has %d values \n", values_cnt);
+
+                  symbol_table[count-1].value = (char*)malloc(sizeof(char) * strlen(serialized));
+                  strcpy(symbol_table[count-1].value, serialized);
             }
       }
 }
