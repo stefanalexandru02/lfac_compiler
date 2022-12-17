@@ -29,10 +29,11 @@ int add_with_value(char c, char* type, char* id, struct symbol_var variable);
 int add_func_with_parameters(char c, char* type, char* id);
 int add(char c, char* type, char* id);
 int search(char *, char);
+const char* get_type(char *);
 %}
 
-%token<nd_obj> CONST ID TIP BGIN END ASSIGN NR NR_F END_CLASS START_FUNCTION END_FUNCTION COMPARATORS START_IF START_WHILE START_FOR START_CLASS START_PROGRAM END_PROGRAM END_IF END_FOR END_WHILE
-%type<nd_obj> expression_element expression function_call variable multiple_values vectorizable_value declaratie_functie lista_param param
+%token<nd_obj> CONST ID TIP BGIN END ASSIGN NR NR_F END_CLASS START_FUNCTION END_FUNCTION COMPARATORS START_IF START_WHILE START_FOR START_CLASS START_PROGRAM END_PROGRAM END_IF END_FOR END_WHILE TYPEOF
+%type<nd_obj> expression_element expression function_call variable multiple_values vectorizable_value
 %left '+'
 %left '*'
 %left '-'
@@ -154,6 +155,8 @@ execution_block_logic : function_call ';'
 
 function_call : variable '(' ')' { if(search($1.str_val, 'F') != -1) { has_semantic_analysis_errors = 1; printf("Function undefined on line %d\n", yylineno); } }
                | variable '(' lista_apel ')'
+               | TYPEOF '(' ID ')' { printf("TypeOf(%s) = %s\n", $3.str_val, get_type($3.str_val)); }
+               | TYPEOF '(' expression ')' { printf("Called typeof on expression\n"); }
                ;
 
 lista_apel : expression_element 
@@ -261,6 +264,16 @@ int search(char *type, char c) {
 		}
 	}
 	return 0;
+}
+
+const char* get_type(char *type) {
+	int i;
+	for(i=count-1; i>=0; i--) {
+		if(strcmp(symbol_table[i].id_name, type)==0) {
+                  return symbol_table[i].data_type;
+		}
+	}
+	return "N/A";
 }
 
 int add(char c, char* type, char* id) {

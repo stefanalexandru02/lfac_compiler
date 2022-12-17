@@ -23,6 +23,8 @@ end_function
 
 function int multiply_empty():
 
+b = 12;
+
 end_function
 
 end_class
@@ -34,5 +36,7 @@ x = 123;
 a = 2 + 3;
 b = 7 + 8;
 sum(12);
+
+TypeOf(sum);
 
 end_program
