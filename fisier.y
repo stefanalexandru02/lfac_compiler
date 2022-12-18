@@ -9,6 +9,8 @@ extern char* yytext;
 
 int q;
 char type[10];
+char messages[1000][1000];
+int message_line = 0;
 
 void* temp_vector[100000];
 int temp_vector_size;
@@ -162,14 +164,69 @@ execution_block_logic : function_call ';'
                     | declaratie_globala ';'
                     ;
 
-function_call : variable '(' ')' { if(search($1.str_val, 'F') != -1) { has_semantic_analysis_errors = 1; printf("Function undefined on line %d\n", yylineno); } }
-               | variable '(' lista_apel ')'
-               | TYPEOF '(' expression ')' { printf("TypeOf on line %d responded with %s\n", yylineno, $3.type); } // TODO This should be printed after the program was completed
-               | EVAL '(' expression ')' { printf("Eval on line %d responded with %s\n", yylineno, $3.str_val); } // TODO This should be printed after the program was completed
+function_call : variable '(' ')' { 
+                  if(search($1.str_val, 'F') != -1) { 
+                        has_semantic_analysis_errors = 1; printf("Function undefined on line %d\n", yylineno);  
+                  }
+                  else {
+                        int found_cnt = 0, found_at = 0;
+                        for(int i=0; i<function_definition_table_count;i++)
+                        {
+                            if(strcmp($1.str_val,function_definition_symbol_table[i].function_id) == 0 )
+                            {
+                              found_cnt++;
+                              found_at=i;
+                            }  
+                        }
+                        if(found_cnt != 1)
+                        {
+                              has_semantic_analysis_errors = 1; printf("Function does not match symbol definition on line %d\n", yylineno);  
+                        } else if(function_definition_symbol_table[found_at].id[0] != '-')
+                        {
+                              has_semantic_analysis_errors = 1; printf("Function does not match symbol definition on line %d\n", yylineno); 
+                        }
+                  } }
+               | variable '(' lista_apel ')' {
+                        if(search($1.str_val, 'F') != -1) { 
+                        has_semantic_analysis_errors = 1; printf("Function undefined on line %d\n", yylineno);  
+                        }
+                        else 
+                        {
+                              int j=0;
+                              for(int i=0; i<function_definition_table_count; ++i)
+                              {
+                                    if(strcmp($1.str_val,function_definition_symbol_table[i].function_id) == 0 )
+                                    {
+                                          if(strcmp(function_definition_symbol_table[i].type, temp_function_call_table[j].type) != 0)
+                                          {
+                                                has_semantic_analysis_errors = 1; printf("Function does not match symbol definition on line %d\n", yylineno); 
+                                          }
+                                          j++;
+                                    }
+                              }
+                              if(j != temp_function_call_cnt)
+                              {
+                                    has_semantic_analysis_errors = 1; printf("Function does not match symbol definition on line %d\n", yylineno); 
+                              }
+                        }
+                        temp_function_call_cnt = 0;
+                  }
+               | TYPEOF '(' expression ')' { 
+                  sprintf(messages[message_line++], "TypeOf on line %d responded with %s\n", yylineno, $3.type);
+                  } 
+               | EVAL '(' expression ')' { 
+                  sprintf(messages[message_line++], "Eval on line %d responded with %s\n", yylineno, $3.str_val);
+                  } 
                ;
 
-lista_apel : expression_element 
-           | lista_apel ',' expression_element
+lista_apel : expression_element { 
+                  temp_function_call_table[temp_function_call_cnt].type = strdup($1.type); 
+                  temp_function_call_table[temp_function_call_cnt++].id = strdup($1.str_val); 
+            }
+           | expression_element ',' lista_apel { 
+                  temp_function_call_table[temp_function_call_cnt].type = strdup($1.type); 
+                  temp_function_call_table[temp_function_call_cnt++].id = strdup($1.str_val); 
+            }
            ;
 
 assign_statement : variable ASSIGN expression ';'
@@ -262,6 +319,10 @@ int main(int argc, char** argv){
 
       print_symbol_table();
       print_function_symbol_table();
+
+      for(int i=0; i<message_line; ++i) printf("%s", messages[i]);
+
+      printf("\n");
 } 
 
 int search(char *type, char c) {
@@ -355,6 +416,14 @@ int add(char c, char* type, char* id) {
 			symbol_table[count].data_type=strdup(type);
 			symbol_table[count].line_no=yylineno;
 			symbol_table[count].type=strdup("Function");
+
+                  function_definition_symbol_table[function_definition_table_count].function_id = symbol_table[count].id_name;
+                  function_definition_symbol_table[function_definition_table_count].function_type = symbol_table[count].data_type;
+                  function_definition_symbol_table[function_definition_table_count].id = strdup("-");
+                  function_definition_symbol_table[function_definition_table_count].type = strdup("-");
+
+                  function_definition_table_count++;
+
 			count++;
 		}
 	}
@@ -458,9 +527,15 @@ int add_with_values(char c, char* type, char* id, struct symbol_var variable) {
 
 int add_func_with_parameters(char c, char* type, char* id)
 {
-      int was_created = add(c, type, id);
-      if(was_created)
+      q=search(id, 0);
+      if(!q)
       {
+            symbol_table[count].id_name=strdup(id);
+		symbol_table[count].data_type=strdup(type);
+		symbol_table[count].line_no=yylineno;
+            symbol_table[count].type=strdup("Function");
+            count++;
+
             for(int i = 0; i < temp_function_definition_cnt; i++)
             {
                   function_definition_symbol_table[function_definition_table_count].function_id = strdup(id);

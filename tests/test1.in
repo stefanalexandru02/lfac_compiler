@@ -16,7 +16,10 @@ class student:
 function int multiply2(int a, int b, int c, int d, char q, bool[] da):
 end_function
 
-function int multiply(int a, int b, int c, int d, char q, bool[] da):
+function int multiply213():
+end_function
+
+function int abracadabra(int a, int b):
 
 end_function
 
@@ -31,7 +34,8 @@ end_class
 start_program
 
 int x = 12;
-sum(12);
+abracadabra(123,123);
+abracadabra(11, x);
 
 Eval(1234/12+(12/2)+12*2);
 Eval(1234/12+(12/2)+x*2);

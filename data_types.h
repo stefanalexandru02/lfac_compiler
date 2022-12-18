@@ -24,8 +24,8 @@ int function_definition_table_count = 0;
 struct temp_function_definition_data {
       char* type;
       char* id;
-} temp_function_definition_table[100];    
-int temp_function_definition_cnt = 0;
+} temp_function_definition_table[100], temp_function_call_table[100];    
+int temp_function_definition_cnt = 0, temp_function_call_cnt = 0;
 
 struct dynamic_variable_values_data {
     char* id;
@@ -117,7 +117,7 @@ const char* convertIntToChar(int value, char * str)
 }
 const char* convertFloatToChar(float value, char * str)
 {
-    sprintf(str, "%.6f", value);
+    sprintf(str, "f%.6f", value);
     return str;
 }
 
@@ -176,5 +176,7 @@ const char* calculateAbstractExpressionStrValue(const char* type, char op, const
         convertFloatToChar(_result, str);
         return str;
     }
+    has_semantic_analysis_errors = 1; 
+    printf("Operation not supported on type %s on line %d\n" , type, yylineno);
     return "N/A";
 }
