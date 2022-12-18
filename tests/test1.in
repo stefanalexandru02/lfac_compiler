@@ -30,9 +30,11 @@ end_class
 
 start_program
 
-int x = 2;
+int x = 12;
 sum(12);
 
+Eval(1234/12+(12/2)+12*2);
 Eval(1234/12+(12/2)+x*2);
+Eval(1234/12+(12/2)+iv[0]*2);
 
 end_program

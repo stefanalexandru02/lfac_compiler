@@ -37,6 +37,7 @@ int add(char c, char* type, char* id);
 int search(char *, char);
 const char* get_type(char *);
 const char* get_value(char *);
+const char* get_value_from_vector(char *, int);
 %}
 
 %token<nd_obj> CONST ID TIP BGIN END ASSIGN NR NR_F END_CLASS START_FUNCTION END_FUNCTION COMPARATORS START_IF START_WHILE START_FOR START_CLASS START_PROGRAM END_PROGRAM END_IF END_FOR END_WHILE TYPEOF EVAL ARITHMETIC_OPERATORS
@@ -232,12 +233,18 @@ expression : expression_element {$$=$1;}
 
 expression_element :  NR { $$.str_val=$1.str_val; $$.type=strdup("int"); }
                     | NR_F { $$.str_val = $1.str_val; $$.type=strdup("float"); }
-                    | variable { $$.type = strdup(get_type($1.str_val)); $$.str_val = $1.evaluated_str_val; }
+                    | variable { $$.type=$1.type;  $$.str_val = $1.evaluated_str_val; }
                     | function_call
                     ;
 
-variable: ID { $$.evaluated_str_val = get_value($$.str_val); }
-      | ID '.' ID;
+variable: ID { $$.evaluated_str_val = get_value($$.str_val); $$.type = strdup(get_type($$.str_val)); }
+      | ID '[' NR ']' { 
+            $$.type = strdup(get_type($$.str_val)); 
+            $$.type[strlen($$.type)-2] = '\0';
+            $$.evaluated_str_val = strdup(get_value_from_vector($$.str_val, atoi($3.str_val))); 
+      }
+      | ID '.' ID
+      ;
 
 /* end expression */
 
@@ -292,6 +299,28 @@ const char* get_value(char *id) {
 	for(i=count-1; i>=0; i--) {
 		if(strcmp(symbol_table[i].id_name, id)==0) {
                   return symbol_table[i].value;
+		}
+	}
+	return "N/A";
+}
+
+const char* get_value_from_vector(char *id, int index)
+{
+      int i;
+	for(i=count-1; i>=0; i--) {
+		if(strcmp(symbol_table[i].id_name, id)==0) {
+                  char buff[1000] = {0};
+                  strcpy(buff, symbol_table[i].value);
+                  char *p = strtok(buff, ",");                  
+                  while(p) {
+                        if(index == 0)
+                        {
+                              char *result = strdup(p);
+                              return result;
+                        }
+                        index--;
+                        p = strtok(NULL, ",");
+                  }
 		}
 	}
 	return "N/A";
