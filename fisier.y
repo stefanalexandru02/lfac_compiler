@@ -6,7 +6,6 @@
 #include "data_types.h"
 extern FILE* yyin;
 extern char* yytext;
-extern int yylineno;
 
 int q;
 char type[10];
@@ -14,26 +13,35 @@ char type[10];
 void* temp_vector[100000];
 int temp_vector_size;
 
-int has_semantic_analysis_errors = 0;
-
 %}
-%union { struct symbol_var { 
-			char *str_val; 
-                  int num_val;
-                  void * linked_symbol;
-		} nd_obj;
-	} 
+%union { 
+      struct symbol_var { 
+	      char *str_val; 
+            char *type;
+            char *evaluated_str_val; 
+            int num_val;
+            void * linked_symbol;
+	} nd_obj;
+
+      struct evaluation_node {
+            char *str_val;
+            char *type;
+      } eval_node;
+} 
 
 %{
-int add_with_value(char c, char* type, char* id, struct symbol_var variable);
+int add_with_value(char c, char* type, char* id, struct evaluation_node variable);
+int add_with_values(char c, char* type, char* id, struct symbol_var variable);
 int add_func_with_parameters(char c, char* type, char* id);
 int add(char c, char* type, char* id);
 int search(char *, char);
 const char* get_type(char *);
+const char* get_value(char *);
 %}
 
-%token<nd_obj> CONST ID TIP BGIN END ASSIGN NR NR_F END_CLASS START_FUNCTION END_FUNCTION COMPARATORS START_IF START_WHILE START_FOR START_CLASS START_PROGRAM END_PROGRAM END_IF END_FOR END_WHILE TYPEOF
-%type<nd_obj> expression_element expression function_call variable multiple_values vectorizable_value
+%token<nd_obj> CONST ID TIP BGIN END ASSIGN NR NR_F END_CLASS START_FUNCTION END_FUNCTION COMPARATORS START_IF START_WHILE START_FOR START_CLASS START_PROGRAM END_PROGRAM END_IF END_FOR END_WHILE TYPEOF EVAL ARITHMETIC_OPERATORS
+%type<nd_obj> function_call variable multiple_values vectorizable_value 
+%type<eval_node> expression_element expression
 %left '+'
 %left '*'
 %left '-'
@@ -67,13 +75,13 @@ declaratie_globala : TIP ID { add('V', $1.str_val, $2.str_val); }
                         if($5.linked_symbol)
                         {
                               if(strcmp($1.str_val, "int[]") == 0 || strcmp($1.str_val, "float[]") == 0 || strcmp($1.str_val, "bool[]") == 0) { 
-                                    add_with_value('V', $1.str_val, $2.str_val, $5);
+                                    add_with_values('V', $1.str_val, $2.str_val, $5);
                               } else { 
                                     has_semantic_analysis_errors = 1; 
                                     printf("Initialization not valid on line %d with type %s\n", yylineno, $1.str_val);
                               }
                         } else {
-                              add_with_value('V', $1.str_val, $2.str_val, $5);
+                              add_with_values('V', $1.str_val, $2.str_val, $5);
                         }
                      } 
                     |
@@ -155,8 +163,8 @@ execution_block_logic : function_call ';'
 
 function_call : variable '(' ')' { if(search($1.str_val, 'F') != -1) { has_semantic_analysis_errors = 1; printf("Function undefined on line %d\n", yylineno); } }
                | variable '(' lista_apel ')'
-               | TYPEOF '(' ID ')' { printf("TypeOf(%s) = %s\n", $3.str_val, get_type($3.str_val)); }
-               | TYPEOF '(' expression ')' { printf("Called typeof on expression\n"); }
+               | TYPEOF '(' expression ')' { printf("TypeOf on line %d responded with %s\n", yylineno, $3.type); } // TODO This should be printed after the program was completed
+               | EVAL '(' expression ')' { printf("Eval on line %d responded with %s\n", yylineno, $3.str_val); } // TODO This should be printed after the program was completed
                ;
 
 lista_apel : expression_element 
@@ -196,37 +204,40 @@ boolean_expression : expression COMPARATORS expression
                     ;
 
 expression : expression_element {$$=$1;}
-          | expression_element '+' expression_element {$$.num_val=$1.num_val+$3.num_val;  }
-          | expression_element '-' expression_element {$$.num_val=$1.num_val-$3.num_val;  }
-          | expression_element '*' expression_element {$$.num_val=$1.num_val*$3.num_val;  }
-          | expression_element '/' expression_element {$$.num_val=$1.num_val/$3.num_val;  }
-          | '(' expression ')' '+' '(' expression ')' {$$.num_val=$2.num_val+$6.num_val;  }
-          | '(' expression ')' '-' '(' expression ')' {$$.num_val=$2.num_val-$6.num_val;  }
-          | '(' expression ')' '*' '(' expression ')' {$$.num_val=$2.num_val*$6.num_val;  }
-          | '(' expression ')' '/' '(' expression ')' {$$.num_val=$2.num_val/$6.num_val;  }
-          | '(' expression ')' '+' expression_element {$$.num_val=$2.num_val+$5.num_val;  }
-          | '(' expression ')' '-' expression_element {$$.num_val=$2.num_val-$5.num_val;  }
-          | '(' expression ')' '*' expression_element {$$.num_val=$2.num_val*$5.num_val;  }
-          | '(' expression ')' '/' expression_element {$$.num_val=$2.num_val/$5.num_val;  }
-          | expression_element '+' '(' expression ')' {$$.num_val=$1.num_val+$4.num_val;  }
-          | expression_element '-' '(' expression ')' {$$.num_val=$1.num_val-$4.num_val;  }
-          | expression_element '*' '(' expression ')' {$$.num_val=$1.num_val*$4.num_val;  }
-          | expression_element '/' '(' expression ')' {$$.num_val=$1.num_val/$4.num_val;  }
-          | expression '+' expression {$$.num_val=$1.num_val+$3.num_val;  }
-          | expression '-' expression {$$.num_val=$1.num_val-$3.num_val;  }
-          | expression '*' expression {$$.num_val=$1.num_val*$3.num_val;  }
-          | expression '/' expression {$$.num_val=$1.num_val/$3.num_val;  }
-          | '(' expression ')' {$$.num_val=$2.num_val;}
+            | expression_element ARITHMETIC_OPERATORS expression_element { 
+                  validateAbstractExpressionTypes($1.type, $3.type); $$.type = $1.type; 
+                  $$.str_val = calculateAbstractExpressionStrValue($$.type, $2.str_val[0], $1.str_val, $3.str_val); 
+            }
+            | '(' expression ')' ARITHMETIC_OPERATORS '(' expression ')' {
+                  validateAbstractExpressionTypes($2.type, $6.type); $$.type = $2.type; 
+                  $$.str_val = calculateAbstractExpressionStrValue($$.type, $4.str_val[0], $2.str_val, $6.str_val); 
+            }
+            | '(' expression ')' ARITHMETIC_OPERATORS expression_element {
+                  validateAbstractExpressionTypes($2.type, $5.type); $$.type = $2.type; 
+                  $$.str_val = calculateAbstractExpressionStrValue($$.type, $4.str_val[0], $2.str_val, $5.str_val); 
+            }
+            | expression_element ARITHMETIC_OPERATORS '(' expression ')' {
+                  validateAbstractExpressionTypes($1.type, $4.type); $$.type = $1.type; 
+                  $$.str_val = calculateAbstractExpressionStrValue($$.type, $2.str_val[0], $1.str_val, $4.str_val); 
+            }
+            | expression ARITHMETIC_OPERATORS expression {
+                  validateAbstractExpressionTypes($1.type, $3.type); $$.type = $1.type; 
+                  $$.str_val = calculateAbstractExpressionStrValue($$.type, $2.str_val[0], $1.str_val, $3.str_val); 
+            }
+            | '(' expression ')' {
+                  $$.type=$2.type;
+                  $$.str_val = $2.str_val;
+            }
           ;
 
-expression_element : variable
-                    | NR { $$=$1; }
-                    | NR_F { $$ = $1; }
+expression_element :  NR { $$.str_val=$1.str_val; $$.type=strdup("int"); }
+                    | NR_F { $$.str_val = $1.str_val; $$.type=strdup("float"); }
+                    | variable { $$.type = strdup(get_type($1.str_val)); $$.str_val = $1.evaluated_str_val; }
                     | function_call
                     ;
 
-variable: ID |
-          ID '.' ID;
+variable: ID { $$.evaluated_str_val = get_value($$.str_val); }
+      | ID '.' ID;
 
 /* end expression */
 
@@ -266,11 +277,21 @@ int search(char *type, char c) {
 	return 0;
 }
 
-const char* get_type(char *type) {
+const char* get_type(char *id) {
 	int i;
 	for(i=count-1; i>=0; i--) {
-		if(strcmp(symbol_table[i].id_name, type)==0) {
+		if(strcmp(symbol_table[i].id_name, id)==0) {
                   return symbol_table[i].data_type;
+		}
+	}
+	return "N/A";
+}
+
+const char* get_value(char *id) {
+      int i;
+	for(i=count-1; i>=0; i--) {
+		if(strcmp(symbol_table[i].id_name, id)==0) {
+                  return symbol_table[i].value;
 		}
 	}
 	return "N/A";
@@ -314,13 +335,13 @@ int add(char c, char* type, char* id) {
       }
 }
 
-int add_with_value(char c, char* type, char* id, struct symbol_var variable) {
+int add_with_value(char c, char* type, char* id, struct evaluation_node variable) {
       int was_created = add(c, type, id);
       if(was_created)
       {
             if(strcmp(type, "int") == 0)
             {
-                  symbol_table[count-1].value = variable.num_val;
+                  symbol_table[count-1].value = variable.str_val;
             }
             else if(strcmp(type, "float") == 0)
             {
@@ -337,6 +358,28 @@ int add_with_value(char c, char* type, char* id, struct symbol_var variable) {
                   symbol_table[count-1].value = variable.str_val[0];
             }
             else if(strcmp(type, "char[]") == 0)
+            {
+                  symbol_table[count-1].value = variable.str_val;
+            }
+            else if(strcmp(type, "bool") == 0)
+            {
+                  if(strlen(variable.str_val)!=1 || (variable.str_val[0]!='0' && variable.str_val[0]!='1'))
+                  {
+                        printf("%s is not a valid bool on line %d\n", variable.str_val, yylineno);
+                        has_semantic_analysis_errors = 1;
+                        return 0;
+                  }
+                  symbol_table[count-1].value = variable.str_val;
+            }
+            
+      }
+}
+
+int add_with_values(char c, char* type, char* id, struct symbol_var variable) {
+      int was_created = add(c, type, id);
+      if(was_created)
+      {
+            if(strcmp(type, "char[]") == 0)
             {
                   symbol_table[count-1].value = variable.str_val;
             }
@@ -380,18 +423,7 @@ int add_with_value(char c, char* type, char* id, struct symbol_var variable) {
 
                   symbol_table[count-1].value = (char*)malloc(sizeof(char) * strlen(serialized));
                   strcpy(symbol_table[count-1].value, serialized);
-            }
-            else if(strcmp(type, "bool") == 0)
-            {
-                  if(strlen(variable.str_val)!=1 || (variable.str_val[0]!='0' && variable.str_val[0]!='1'))
-                  {
-                        printf("%s is not a valid bool on line %d\n", variable.str_val, yylineno);
-                        has_semantic_analysis_errors = 1;
-                        return 0;
-                  }
-                  symbol_table[count-1].value = variable.str_val;
-            }
-            
+            }            
       }
 }
 

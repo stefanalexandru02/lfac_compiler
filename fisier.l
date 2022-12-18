@@ -18,6 +18,7 @@
 "end_function" { yylval.nd_obj.str_val = strdup(yytext); return END_FUNCTION;}
 
 "TypeOf" {return TYPEOF; }
+"Eval" {return EVAL; }
 
 "class" {return START_CLASS; }
 "end_class" {return END_CLASS;}
@@ -35,6 +36,7 @@ f[0-9]+.[0-9]+ { yylval.nd_obj.str_val = strdup(yytext); yylval.nd_obj.num_val =
 
 "=" { return ASSIGN;}
 "<"|"<="|"=="|">"|">="|"!=" { return COMPARATORS; }
+"+"|"-"|"/"|"*" { yylval.nd_obj.str_val = strdup(yytext); return ARITHMETIC_OPERATORS; }
 
 [ \t] ;
 \n {yylineno++;}
