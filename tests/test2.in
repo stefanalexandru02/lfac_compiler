@@ -1,27 +1,45 @@
-int[] x, y, z;
-int a;
 char c;
-char[] test;
 bool asb;
+const int a = 10 ;
+int[] iv = [12,343,141];
+int tiy = 123;
+int[] iiv = [343,141,89, 1234];
+int ti = 123;
 
-function int sum():
+float f = f123.123;
 
-
-
-end_function
+char c_t = 1;
+char[] str = Salut;
 
 class student:
 
-int a;
-char[] dfr;
+function int multiply2(int a, int b, int c, int d, char q, bool[] da):
+end_function
 
+function int multiply213():
+end_function
+
+function int abracadabra(int a, int b):
+
+end_function
+
+function int multiply_empty():
+
+ti = 12;
+
+end_function
 
 end_class
 
-start_program 
+start_program
 
-c = 2 * 15;
-f = 8 / 2;
-f = (2*5+10)-(2*2);
+int x = 12;
+x = 123;
+abracadabra(123,123);
+abracadabra(11, x);
+
+Eval(1234/12+(12/2)+12*2);
+Eval(1234/12+(12/2)+x*2);
+Eval(1234/12+(12/2)+iv[0]*2);
 
 end_program
