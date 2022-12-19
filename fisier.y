@@ -188,7 +188,7 @@ function_call : variable '(' ')' {
                   } }
                | variable '(' lista_apel ')' {
                         if(search($1.str_val, 'F') != -1) { 
-                        has_semantic_analysis_errors = 1; printf("Function undefined on line %d\n", yylineno);  
+                              has_semantic_analysis_errors = 1; printf("Function undefined on line %d\n", yylineno);  
                         }
                         else 
                         {
@@ -229,7 +229,13 @@ lista_apel : expression_element {
             }
            ;
 
-assign_statement : variable ASSIGN expression ';'
+assign_statement : variable ASSIGN expression ';' { 
+                        if(search($1.str_val, 0) != -1)
+                        {
+                              has_semantic_analysis_errors = 1; printf("Variable does not match symbol definition on line %d\n", yylineno); 
+                        }
+                        validateAbstractExpressionTypes(get_type($1.str_val), $3.type); 
+                  }
                  ;
 
 control_statement : if_statement
@@ -352,7 +358,7 @@ const char* get_type(char *id) {
                   return symbol_table[i].data_type;
 		}
 	}
-	return "N/A";
+	return "char[]";
 }
 
 const char* get_value(char *id) {
@@ -362,7 +368,7 @@ const char* get_value(char *id) {
                   return symbol_table[i].value;
 		}
 	}
-	return "N/A";
+	return id;
 }
 
 const char* get_value_from_vector(char *id, int index)

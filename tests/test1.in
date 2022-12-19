@@ -25,7 +25,7 @@ end_function
 
 function int multiply_empty():
 
-b = 12;
+ti = 12;
 
 end_function
 
@@ -34,6 +34,7 @@ end_class
 start_program
 
 int x = 12;
+x = 123;
 abracadabra(123,123);
 abracadabra(11, x);
 
