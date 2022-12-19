@@ -1,31 +1,28 @@
 char c;
-bool asb;
-const int a = 10 ;
-int[] iv = [12,343,141];
-int tiy = 123;
-int[] iiv = [343,141,89, 1234];
-int ti = 123;
-
+bool x;
+int m;
 float f = f123.123;
-
-char c_t = 1;
+const int a = 10 ;
+int[] vector1 = [12,343,141];
+int[] vector2 = [343,141,89, 1234];
+bool[] vector3 = [0,1,1,1];
 char[] str = Salut;
 
+
+char k = 1;
 class student:
 
-function int multiply2(int a, int b, int c, int d, char q, bool[] da):
-end_function
-
-function int multiply213():
-end_function
-
-function int abracadabra(int a, int b):
+function int multiply1(int a, int b, int c, char d):
 
 end_function
 
-function int multiply_empty():
+function int multiply2():
 
-ti = 12;
+int h = 8;
+
+end_function
+
+function int op(int d, int v):
 
 end_function
 
@@ -35,8 +32,8 @@ start_program
 
 int x = 12;
 x = 123;
-abracadabra(123,123);
-abracadabra(11, x);
+multiply1(10,18,4,s);
+op(11, x);
 
 Eval(1234/12+(12/2)+12*2);
 Eval(1234/12+(12/2)+x*2);
