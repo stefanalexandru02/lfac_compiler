@@ -214,7 +214,7 @@ function_call : variable '(' ')' {
                | TYPEOF '(' expression ')' { 
                   sprintf(messages[message_line++], "TypeOf on line %d responded with %s\n", yylineno, $3.type);
                   } 
-               | EVAL '(' expression ')' { 
+               | EVAL '(' expression ')' {  // returneaza zero daca nu este implementat
                   sprintf(messages[message_line++], "Eval on line %d responded with %s\n", yylineno, $3.str_val);
                   } 
                ;
@@ -264,7 +264,7 @@ for_statement : START_FOR assign_statement boolean_expression ';' assign_stateme
 
 /* expression */
 
-boolean_expression : expression COMPARATORS expression
+boolean_expression : expression COMPARATORS expression // trebuie sa suporte mai multe expresii
                     ;
 
 expression : expression_element {$$=$1;}

@@ -1,5 +1,4 @@
 char c;
-bool x;
 int m;
 float f = f123.123;
 const int a = 10 ;
@@ -12,18 +11,22 @@ char[] str = Salut;
 char k = 1;
 class student:
 
-function int multiply1(int a, int b, int c, char d):
+int abc = 12;
 
+function int multiply1(int a):
+if(a > 10) {
+a = a * 2;
+}end_if
 end_function
 
 function int multiply2():
+int h;
 
-int h = 8;
 
 end_function
 
-function int op(int d, int v):
-
+function int operation(int d, int v):
+a = a * 100;
 end_function
 
 end_class
@@ -32,12 +35,30 @@ start_program
 
 int x = 12;
 x = 123;
-multiply1(10,18,4,s);
-op(11, x);
+multiply1(10);
+operation(11, x);
+
+while(a > 10) {
+a = a / 1000;
+}end_while
+
+for(a = 1; a < 100; a = a+1;){
+f = f / f123.1;
+}end_for
 
 Eval(1234/12+(12/2)+12*2);
 Eval(1234/12+(12/2)+x*2);
-Eval(1234/12+(12/2)+iv[0]*2);
+Eval(1234/12+(12/2)+vector1[0]*2);
 
+a = multiply1(10) + (12 / 2 + vector1[0]);
+
+student maria;
+student stefan;
+
+TypeOf(multiply1(10));
+
+multiply1(12);
+
+asdfjhsakdfh();
 
 end_program
